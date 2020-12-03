@@ -10,6 +10,3 @@ fun toSlope(input: String): Slope {
     return Slope(parse(input), split[0].length, split.size)
 }
 
-//private fun Set<Coordinate>.explode(i: Int): Set<Coordinate> {
-//    (1..i)
-//}

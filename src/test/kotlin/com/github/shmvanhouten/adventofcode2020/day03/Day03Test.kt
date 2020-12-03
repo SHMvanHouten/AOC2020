@@ -133,14 +133,14 @@ class Day03Test {
 
         @Test
         internal fun `part 2`() {
-            val r1d1 = countTreesInPath(toSlope(day3Input), 1, 1)
-            val r3d1 = countTreesInPath(toSlope(day3Input), 3, 1)
-            val r5d1 = countTreesInPath(toSlope(day3Input), 5, 1)
-            val r7d1 = countTreesInPath(toSlope(day3Input), 7, 1)
-            val r1d2 = countTreesInPath(toSlope(day3Input), 1, 2)
+            val slope = toSlope(day3Input)
+            val r1d1 = countTreesInPath(slope, 1, 1)
+            val r3d1 = countTreesInPath(slope, 3, 1)
+            val r5d1 = countTreesInPath(slope, 5, 1)
+            val r7d1 = countTreesInPath(slope, 7, 1)
+            val r1d2 = countTreesInPath(slope, 1, 2)
 
-            assertThat(r1d1 * r3d1 * r5d1 * r7d1 * r1d2, greaterThan(712691360))
-            // 712691360 too low
+            assertThat(1L * r1d1 * r3d1 * r5d1 * r7d1 * r1d2, equalTo(5007658656L))
         }
     }
 
