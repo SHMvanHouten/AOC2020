@@ -23,7 +23,6 @@ private fun countTreesInPath(
     stepHeight: Int
 ): Int {
     return 0.until(height).filter { step ->
-
         treeCoordinates.any { it == Coordinate(stepWidth * step % width, step * stepHeight) }
     }.count()
 }
