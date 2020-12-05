@@ -53,16 +53,14 @@ class Passport(val data: Map<String, String>) {
         val unit = height.dropWhile { it.isDigit() }
         val amount = height.takeWhile { it.isDigit() }.toInt()
         return unit == "cm"
-                && amount >= 150
-                && amount <= 193
+                && amount in 150..193
     }
 
     private fun isValidHeightInInches(height: String): Boolean {
         val unit = height.dropWhile { it.isDigit() }
         val amount = height.takeWhile { it.isDigit() }.toInt()
         return unit == "in"
-                && amount >= 59
-                && amount <= 76
+                && amount in 59..76
     }
 
     private fun isValidYear(year: String, min: Int, max: Int) =
@@ -70,8 +68,7 @@ class Passport(val data: Map<String, String>) {
 
     private fun isValidYear(year: Int?, min: Int, max: Int): Boolean {
         return year != null
-                && year >= min
-                && year <= max
+                && year in min..max
     }
 }
 

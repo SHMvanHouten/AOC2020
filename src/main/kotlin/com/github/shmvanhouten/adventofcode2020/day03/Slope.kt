@@ -9,4 +9,3 @@ fun toSlope(input: String): Slope {
     val split = input.split('\n')
     return Slope(parse(input), split[0].length, split.size)
 }
-
