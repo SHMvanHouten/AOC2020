@@ -50,6 +50,19 @@ class Day09Test {
     @Nested
     inner class Part2 {
 
+        @Test
+        internal fun `test input`() {
+            val testInput =
+                listOf(35L, 20, 15, 25, 47, 40, 62, 55, 65, 95, 102, 117, 150, 182, 127, 219, 299, 277, 309, 576)
+
+            assertThat(findContiguousListThatAddsUpTo(127L, testInput), equalTo(listOf(15L, 25L, 47L, 40L)))
+        }
+
+        @Test
+        internal fun `part 2`() {
+            val result = findContiguousListThatAddsUpTo(507622668L, input)
+            assertThat(result.min()!! + result.max()!!, equalTo(76688505L))
+        }
     }
 
 }
