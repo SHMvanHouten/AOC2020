@@ -4,6 +4,7 @@ import com.github.shmvanhouten.adventofcode2020.coordinate.Coordinate
 import com.github.shmvanhouten.adventofcode2020.util.FileReader.readFile
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import com.natpryce.hamkrest.hasElement
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -85,6 +86,71 @@ L.LLLLL.LL"""
     inner class Part2 {
 
         @Test
+        internal fun `the empty seat sees no occupied seats`() {
+            val input = """
+                |.##.##.
+                |#.#.#.#
+                |##...##
+                |...L...
+                |##...##
+                |#.#.#.#
+                |.##.##.""".trimMargin()
+            val seatingArea = SeatingArea(parseEmptySeats(input), parseOccupiedSeats(input))
+            assertThat(
+                seatingArea.tickCorrectly().occupiedSeats,
+                hasElement(Coordinate(3, 3))
+            )
+        }
+
+        @Test
+        internal fun `the bottom left most occupied seat sees no other occupied seats and thus stays occupied`() {
+            val input = """
+                |.......#.
+                |...#.....
+                |.#.......
+                |.........
+                |..#L....#
+                |....#....
+                |.........
+                |#........
+                |...#.....
+            """.trimMargin()
+            val seatingArea = SeatingArea(parseEmptySeats(input), parseOccupiedSeats(input))
+            assertThat(
+                seatingArea.tickCorrectly().occupiedSeats,
+                hasElement(Coordinate(0, 7))
+            )
+        }
+
+        @Test
+        internal fun `the occupied seat at 1, 1 sees 5 occupied seats and thus becomes empty`() {
+            val input = """
+                |L.#......
+                |.#.....#.
+                |#.#......
+                |.#.......
+                |.........
+                |..#L....#
+                |....#....
+                |.........
+                |#........
+                |...#.....
+            """.trimMargin()
+            val seatingArea = SeatingArea(parseEmptySeats(input), parseOccupiedSeats(input))
+            val tickedSeatingArea = seatingArea.tickCorrectly()
+            assertThat(
+                tickedSeatingArea.emptySeats,
+                hasElement(Coordinate(1, 1))
+            )
+            assertThat(
+                // todo: hamkrest negate?
+                tickedSeatingArea.occupiedSeats.contains(Coordinate(1, 1)),
+                equalTo(false)
+            )
+
+        }
+
+        @Test
         internal fun testInput() {
             val input = """L.LL.LL.LL
 LLLLLLL.LL
@@ -98,6 +164,13 @@ L.LLLLLL.L
 L.LLLLL.LL"""
             val seatingArea = SeatingArea(parseEmptySeats(input))
             assertThat(tickUntilStable2(seatingArea).occupiedSeats.size, equalTo(26))
+        }
+
+        @Test
+        internal fun `part 2`() {
+            val input = readFile("/input-day11.txt")
+            val seatingArea = SeatingArea(parseEmptySeats(input))
+            assertThat(tickUntilStable2(seatingArea).occupiedSeats.size, equalTo(2259))
         }
     }
 
