@@ -1,5 +1,8 @@
 package com.github.shmvanhouten.adventofcode2020.coordinate
 
+import com.github.shmvanhouten.adventofcode2020.coordinate.ClockDirection.CLOCKWISE
+import com.github.shmvanhouten.adventofcode2020.coordinate.ClockDirection.COUNTER_CLOCKWISE
+import com.github.shmvanhouten.adventofcode2020.coordinate.Degree.*
 import com.github.shmvanhouten.adventofcode2020.coordinate.RelativePosition.*
 import kotlin.math.abs
 
@@ -52,8 +55,75 @@ data class Coordinate(val x: Int, val y: Int) {
     fun distanceFrom(other: Coordinate): Int {
         return abs(this.x - other.x) + abs(this.y - other.y)
     }
+
+    fun times(amount: Int): Coordinate {
+        return Coordinate(this.x * amount, this.y * amount)
+    }
+
+    fun turnRelativeToOrigin(direction: ClockDirection, degrees: Degree): Coordinate {
+        return when {
+            shouldRotateASemiCircle(degrees) -> {
+                mirror(this)
+
+            }
+            shouldRotateClockWise(direction, degrees) -> {
+                rotateClockwiseRelativeToOrigin()
+
+            }
+            shouldRotateCounterClockwise(direction, degrees) -> {
+                rotateCounterClockwiseRelativeToOrigin()
+
+            }
+            else -> {
+                error("unsupported turn")
+            }
+        }
+    }
+
+    fun rotateCounterClockwiseRelativeToOrigin() = mirror(rotateClockwiseRelativeToOrigin())
+
+    fun rotateClockwiseRelativeToOrigin(): Coordinate {
+        return when {
+            this.x >= 0 && this.y >= 0 -> {
+                this.copy(x = y.negate(), y = x)
+
+            }
+            this.x < 0 && this.y >= 0 -> {
+                this.copy(x = y.negate(), y = x)
+
+            }
+            this.x >= 0 && this.y < 0 -> {
+                this.copy(x = y.negate(), y = x)
+
+            }
+            this.x < 0 && this.y < 0 -> {
+                this.copy(x = y.negate(), y = x)
+
+            }
+            else -> {
+                error("Down is up and up is down, what is going on?")
+            }
+        }
+    }
+
+    private fun mirror(start: Coordinate) =
+        Coordinate(start.x.negate(), start.y.negate())
+
+    private fun shouldRotateASemiCircle(degrees: Degree) = degrees == D180
+
+    private fun shouldRotateClockWise(
+        direction: ClockDirection,
+        degrees: Degree
+    ) = direction == CLOCKWISE && degrees == D90
+            || direction == COUNTER_CLOCKWISE && degrees == D270
+
+    private fun shouldRotateCounterClockwise(
+        direction: ClockDirection,
+        degrees: Degree
+    ) = direction == COUNTER_CLOCKWISE && degrees == D90
+            || direction == CLOCKWISE && degrees == D270
 }
 
-private fun Int.negate(): Int {
+fun Int.negate(): Int {
     return this * -1
 }

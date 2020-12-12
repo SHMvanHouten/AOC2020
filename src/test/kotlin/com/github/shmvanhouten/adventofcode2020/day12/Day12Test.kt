@@ -1,7 +1,10 @@
 package com.github.shmvanhouten.adventofcode2020.day12
 
-import com.github.shmvanhouten.adventofcode2020.coordinate.Degree
+import com.github.shmvanhouten.adventofcode2020.coordinate.ClockDirection.CLOCKWISE
+import com.github.shmvanhouten.adventofcode2020.coordinate.ClockDirection.COUNTER_CLOCKWISE
+import com.github.shmvanhouten.adventofcode2020.coordinate.Coordinate
 import com.github.shmvanhouten.adventofcode2020.coordinate.Degree.D180
+import com.github.shmvanhouten.adventofcode2020.coordinate.Degree.D90
 import com.github.shmvanhouten.adventofcode2020.coordinate.Direction.*
 import com.github.shmvanhouten.adventofcode2020.coordinate.Turn.LEFT
 import com.github.shmvanhouten.adventofcode2020.coordinate.Turn.RIGHT
@@ -10,6 +13,8 @@ import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 
 class Day12Test {
 
@@ -103,6 +108,114 @@ class Day12Test {
             val input = readFile("/input-day12.txt")
             val instructions = input.lines()
             assertThat(navigate(Ship(), instructions).distanceFromStart(), equalTo(1645))
+        }
+    }
+
+    @Nested
+    inner class Part2 {
+
+        @ParameterizedTest
+        @CsvSource(
+            "1, 3, -3, 1",
+            "1, -3, 3, 1",
+            "-1, 3, -3, -1",
+            "-1, -3, 3, -1",
+            "-3, 1, -1, -3",
+            "10, -4, 4, 10"
+        )
+        internal fun `moving clockwise 90 degrees`(
+            startX: Int,
+            startY: Int,
+            expectedX: Int,
+            expectedY: Int
+        ) {
+            // starting with waypoint relative position of (startX, startY) if we rotate the waypoint right by 90 degrees it will have moved to relative position (expectedX, expectedY)
+            var ship = WaypointedShip(waypointRelativePosition = Coordinate(startX, startY))
+            ship = ship.rotateWaypoint(CLOCKWISE, D90)
+            assertThat(ship.waypointRelativePosition, equalTo(Coordinate(expectedX, expectedY)))
+        }
+
+        @ParameterizedTest
+        @CsvSource(
+            "1, 3, 3, -1",
+            "1, -3, -3, -1",
+            "-1, 3, 3, 1",
+            "-1, -3, -3, 1"
+        )
+        internal fun `moving counter clockwise 90 degrees`(
+            startX: Int,
+            startY: Int,
+            expectedX: Int,
+            expectedY: Int
+        ) {
+            var ship = WaypointedShip(waypointRelativePosition = Coordinate(startX, startY))
+            ship = ship.rotateWaypoint(COUNTER_CLOCKWISE, D90)
+            assertThat(ship.waypointRelativePosition, equalTo(Coordinate(expectedX, expectedY)))
+        }
+
+        @ParameterizedTest
+        @CsvSource(
+            "1, 3, -1, -3",
+            "1, -3, -1, 3",
+            "-1, 3, 1, -3",
+            "-1, -3, 1, 3"
+        )
+        internal fun `moving by 180 degrees in any direction just mirrors the relative position`(
+            startX: Int,
+            startY: Int,
+            expectedX: Int,
+            expectedY: Int
+        ) {
+            var ship = WaypointedShip(waypointRelativePosition = Coordinate(startX, startY))
+            ship = ship.rotateWaypoint(COUNTER_CLOCKWISE, D180)
+            assertThat(ship.waypointRelativePosition, equalTo(Coordinate(expectedX, expectedY)))
+        }
+
+        @Test
+        internal fun `test input`() {
+            val input = """
+                |F10
+                |N3
+                |F7
+                |R90
+                |F11
+            """.trimMargin()
+            val instructions = input.lines()
+
+            assertThat(navigate(WaypointedShip(), instructions).distanceFromStart(), equalTo(286))
+        }
+
+        @Test
+        internal fun `back where we started`() {
+            val input = """
+                |F10
+                |L180
+                |F10
+            """.trimMargin()
+            val instructions = input.lines()
+
+            assertThat(navigate(WaypointedShip(), instructions).distanceFromStart(), equalTo(0))
+        }
+
+        @Test
+        internal fun `back where we started 2`() {
+            val input = """
+                |F10
+                |L90
+                |L90
+                |F10
+            """.trimMargin()
+            val instructions = input.lines()
+
+            assertThat(navigate(WaypointedShip(), instructions).distanceFromStart(), equalTo(0))
+        }
+
+        @Test
+        internal fun `part 2`() {
+            val input = readFile("/input-day12.txt")
+            val instructions = input.lines()
+
+            assertThat(navigate(WaypointedShip(), instructions).distanceFromStart(), equalTo(35292))
         }
     }
 
