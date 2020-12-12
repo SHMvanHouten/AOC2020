@@ -1,5 +1,7 @@
 package com.github.shmvanhouten.adventofcode2020.coordinate
 
+import com.github.shmvanhouten.adventofcode2020.coordinate.Degree.D90
+
 enum class Direction {
     NORTH,
     EAST,
@@ -25,10 +27,23 @@ enum class Direction {
 
     fun turnBack(): Direction{
         return when(this){
-            Direction.NORTH -> SOUTH
-            Direction.EAST -> WEST
-            Direction.SOUTH -> NORTH
-            Direction.WEST -> EAST
+            NORTH -> SOUTH
+            EAST -> WEST
+            SOUTH -> NORTH
+            WEST -> EAST
+        }
+    }
+
+    fun turn(turn: Turn, by: Degree = D90): Direction {
+        return turn(turn.by(by))
+    }
+
+    private fun turn(turn: Turn): Direction {
+        return when (turn) {
+            Turn.LEFT -> this.turnLeft()
+            Turn.RIGHT -> this.turnRight()
+            Turn.FORWARD -> this
+            Turn.BACK -> this.turnBack()
         }
     }
 }

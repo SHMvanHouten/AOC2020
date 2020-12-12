@@ -1,6 +1,7 @@
 package com.github.shmvanhouten.adventofcode2020.coordinate
 
 import com.github.shmvanhouten.adventofcode2020.coordinate.RelativePosition.*
+import kotlin.math.abs
 
 data class Coordinate(val x: Int, val y: Int) {
     fun getSurrounding(): Set<Coordinate> {
@@ -31,12 +32,12 @@ data class Coordinate(val x: Int, val y: Int) {
         return Coordinate(x, y)
     }
 
-    fun move(direction: Direction): Coordinate {
+    fun move(direction: Direction, distance: Int = 1): Coordinate {
         return when (direction) {
-            Direction.NORTH -> this + TOP.coordinate
-            Direction.EAST -> this + RIGHT.coordinate
-            Direction.SOUTH -> this + BOTTOM.coordinate
-            Direction.WEST -> this + LEFT.coordinate
+            Direction.NORTH -> this + Coordinate(0, distance.negate())
+            Direction.EAST -> this + Coordinate(distance, 0)
+            Direction.SOUTH -> this + Coordinate(0, distance)
+            Direction.WEST -> this + Coordinate(distance.negate(), 0)
         }
     }
 
@@ -47,4 +48,12 @@ data class Coordinate(val x: Int, val y: Int) {
     fun isInBounds(minX: Int, maxX: Int, minY: Int, maxY: Int): Boolean =
         this.x in minX..maxX
                 && this.y in minY..maxY
+
+    fun distanceFrom(other: Coordinate): Int {
+        return abs(this.x - other.x) + abs(this.y - other.y)
+    }
+}
+
+private fun Int.negate(): Int {
+    return this * -1
 }
