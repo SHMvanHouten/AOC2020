@@ -53,11 +53,11 @@ class Day07Test {
         }
 
         @Test
-        internal fun `part 1`() {
+        internal fun `part 2`() {
             val input = FileReader.readFile("/input-day07.txt")
             assertThat(
                 countAmountOfBagsItHolds(parseBags(input), "shiny gold"),
-                equalTo(185L)
+                equalTo(89084L)
             )
         }
     }

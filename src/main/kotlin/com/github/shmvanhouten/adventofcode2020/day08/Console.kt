@@ -11,9 +11,6 @@ class Console(private val instructions: List<Instruction>) {
         while (!visitedPositions.contains(pointer) && pointer < instructions.size) {
             visitedPositions.add(pointer)
             val instruction = instructions[pointer]
-            println("pointer: $pointer")
-            println("accumulator: $accumulator")
-            println("instruction: ${instruction} ${instruction.argument}")
             if (instruction is Acc) {
                 accumulator += instruction.argument
                 pointer++
