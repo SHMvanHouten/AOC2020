@@ -16,23 +16,10 @@ fun findEarliestTimestampWhereBusesComeInAtThePrescribedTimesBruteForce(busIDsBy
         }
 }
 
-//fun findEarliestTimestampWhereBusesComeInAtThePrescribedTimesBruteForce(busIDsByOffset: List<Pair<Int, Int>>): Long {
-//    val bus0 = busIDsByOffset.maxBy { it.second }!!
-//
-//    busIDsByOffset.map { it.first + it.second }
-//    return generateSequence(bus0.second.toLong()) {it + bus0.second.toLong()}
-//        .first { i ->
-////            println()
-////            println(i/bus0)
-//            busIDsByOffset.map {
-////                print((i + it.first) % it.second)
-////                print(", ")
-//                (i + (it.first - bus0.first)) % it.second
-//            }.all { it == 0L }
-//        } - bus0.first
-//}
-
 fun findEarliestTimestampWhereBusesComeInAtThePrescribedTimes(buses: List<Bus>): Long {
+    // after the first time sublist(0,n) was true for all buses that
+    // (i + bus.offset) % bus.id == 0L ("startpoint"), it recurred at a regular time
+    // (iterationSize) it would be true again
     var iterationSize = 1L
     var startPoint = 1L
     for (bus in buses) {
