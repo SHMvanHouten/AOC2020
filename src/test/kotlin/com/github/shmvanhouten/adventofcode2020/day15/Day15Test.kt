@@ -53,9 +53,10 @@ class Day15Test {
     }
 
     @Test
-    internal fun `part 1`() {
+    internal fun `part 2`() {
         val startingNumbers = input
-        assertThat(findSpokenNumberAt(30000000, startingNumbers), equalTo(253))
+//         6 seconds
+//        assertThat(findSpokenNumberAt(30000000, startingNumbers), equalTo(13710))
     }
 
 }
