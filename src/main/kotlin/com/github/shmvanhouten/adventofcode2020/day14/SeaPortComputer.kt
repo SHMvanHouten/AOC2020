@@ -2,7 +2,6 @@ package com.github.shmvanhouten.adventofcode2020.day14
 
 import com.github.shmvanhouten.adventofcode2017.util.splitIntoTwo
 
-
 class SeaPortComputer (val memory: MutableMap<Int, Long> = mutableMapOf()) {
 
     fun initialize(program: List<String>) {
