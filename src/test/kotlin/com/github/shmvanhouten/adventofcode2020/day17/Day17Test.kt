@@ -1,6 +1,8 @@
 package com.github.shmvanhouten.adventofcode2020.day17
 
-import com.github.shmvanhouten.adventofcode2019.day12.Coord3d
+import com.github.shmvanhouten.adventofcode2020.util.Coord
+import com.github.shmvanhouten.adventofcode2020.util.Coord3d
+import com.github.shmvanhouten.adventofcode2020.util.Coord4d
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.hasElement
@@ -16,19 +18,21 @@ class Day17Test {
                 |..#
                 |###
             """.trimMargin()
-        assertThat(parse(input), equalTo(
-            mapOf(
-                Coord3d(0, 0, 0) to Cube(Coord3d(0, 0, 0), false),
-                Coord3d(1, 0, 0) to Cube(Coord3d(1, 0, 0), true),
-                Coord3d(2, 0, 0) to Cube(Coord3d(2, 0, 0), false),
-                Coord3d(0, 1, 0) to Cube(Coord3d(0, 1, 0), false),
-                Coord3d(1, 1, 0) to Cube(Coord3d(1, 1, 0), false),
-                Coord3d(2, 1, 0) to Cube(Coord3d(2, 1, 0), true),
-                Coord3d(0, 2, 0) to Cube(Coord3d(0, 2, 0), true),
-                Coord3d(1, 2, 0) to Cube(Coord3d(1, 2, 0), true),
-                Coord3d(2, 2, 0) to Cube(Coord3d(2, 2, 0), true),
+        assertThat(
+            parse3d(input), equalTo(
+                mapOf(
+                    Coord3d(0, 0, 0) to Cube(Coord3d(0, 0, 0), false),
+                    Coord3d(1, 0, 0) to Cube(Coord3d(1, 0, 0), true),
+                    Coord3d(2, 0, 0) to Cube(Coord3d(2, 0, 0), false),
+                    Coord3d(0, 1, 0) to Cube(Coord3d(0, 1, 0), false),
+                    Coord3d(1, 1, 0) to Cube(Coord3d(1, 1, 0), false),
+                    Coord3d(2, 1, 0) to Cube(Coord3d(2, 1, 0), true),
+                    Coord3d(0, 2, 0) to Cube(Coord3d(0, 2, 0), true),
+                    Coord3d(1, 2, 0) to Cube(Coord3d(1, 2, 0), true),
+                    Coord3d(2, 2, 0) to Cube(Coord3d(2, 2, 0), true),
+                )
             )
-        ))
+        )
     }
 
 
@@ -42,7 +46,7 @@ class Day17Test {
                 |..#
                 |.#.
             """.trimMargin()
-            val pocketDimension = PocketDimension(parse(input))
+            val pocketDimension = PocketDimension(parse3d(input))
             assertThat(
                 pocketDimension.cubes.values,
                 hasElement((Cube(Coord3d(1, 1, 0), false)))
@@ -61,7 +65,7 @@ class Day17Test {
                 |..#
                 |###
             """.trimMargin()
-            val pocketDimension = PocketDimension(parse(input))
+            val pocketDimension = PocketDimension(parse3d(input))
             assertThat(pocketDimension.activeCubes().size, equalTo(5))
 
             val after1Cycle = pocketDimension.cycle()
@@ -90,12 +94,48 @@ class Day17Test {
                 |.#.###.#
             """.trimMargin()
 
-            val pocketDimension = PocketDimension(parse(input))
+            val pocketDimension = PocketDimension(parse3d(input))
             assertThat(pocketDimension.cycle(6).activeCubes().size, equalTo(263))
         }
     }
 
-    private fun parse(input: String): Map<Coord3d, Cube> {
+    @Nested
+    inner class Part2 {
+
+        @Test
+        internal fun `example input`() {
+            val input = """
+                |.#.
+                |..#
+                |###
+            """.trimMargin()
+            val pocketDimension = PocketDimension(parse4d(input))
+            assertThat(pocketDimension.activeCubes().size, equalTo(5))
+
+            assertThat(pocketDimension.cycle().activeCubes().size, equalTo(29))
+            assertThat(pocketDimension.cycle(6).activeCubes().size, equalTo(848))
+
+        }
+
+        @Test
+        internal fun `part 2`() {
+            val input = """
+                |##....#.
+                |#.#..#..
+                |...#....
+                |...#.#..
+                |###....#
+                |#.#....#
+                |.#....##
+                |.#.###.#
+            """.trimMargin()
+
+            val pocketDimension = PocketDimension(parse4d(input))
+            assertThat(pocketDimension.cycle(6).activeCubes().size, equalTo(1680))
+        }
+    }
+
+    private fun parse3d(input: String): Map<Coord, Cube> {
         return input.lines()
             .mapIndexed { y, line -> parseLine(y, line) }
             .flatten()
@@ -103,13 +143,31 @@ class Day17Test {
             .toMap()
     }
 
-    private fun parseLine(y: Int, line: String): List<Cube> {
+    private fun parse4d(input: String): Map<Coord, Cube> {
+        return input.lines()
+            .mapIndexed { y, line -> parse4dLine(y, line) }
+            .flatten()
+            .map { it.location to it }
+            .toMap()
+    }
+
+    private fun parse4dLine(y: Int, line: String): List<Cube> {
         return line.mapIndexed { x, c ->
-          toCube(c, x, y)
+            to4dCube(c, x, y)
         }
     }
 
-    private fun toCube(c: Char, x: Int, y: Int): Cube {
+    private fun to4dCube(c: Char, x: Int, y: Int): Cube {
+        return Cube(Coord4d(x, y, 0, 0), c == '#')
+    }
+
+    private fun parseLine(y: Int, line: String): List<Cube> {
+        return line.mapIndexed { x, c ->
+            to3dCube(c, x, y)
+        }
+    }
+
+    private fun to3dCube(c: Char, x: Int, y: Int): Cube {
         return Cube(Coord3d(x, y, 0), c == '#')
     }
 

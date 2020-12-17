@@ -1,6 +1,5 @@
 package com.github.shmvanhouten.adventofcode2020.util
 
-import com.github.shmvanhouten.adventofcode2019.day12.Coord3d
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.hasElement
@@ -40,9 +39,9 @@ internal class Coord3dKtTest {
             Coord3d(1, 1, 1),
         )
 
-        Coord3d(0,0,0).neighbours().forEach {
+        Coord3d(0,0,0).neighbours.forEach {
             assertThat(neighbours, hasElement(it))
         }
-        assertThat(Coord3d(0,0,0).neighbours().size, equalTo(neighbours.size))
+        assertThat(Coord3d(0,0,0).neighbours.size, equalTo(neighbours.size))
     }
 }

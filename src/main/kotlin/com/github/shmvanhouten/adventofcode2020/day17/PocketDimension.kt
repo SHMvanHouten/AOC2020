@@ -1,9 +1,8 @@
 package com.github.shmvanhouten.adventofcode2020.day17
 
-import com.github.shmvanhouten.adventofcode2019.day12.Coord3d
-import com.github.shmvanhouten.adventofcode2020.util.neighbours
+import com.github.shmvanhouten.adventofcode2020.util.Coord
 
-class PocketDimension(val cubes: Map<Coord3d, Cube>) {
+class PocketDimension(val cubes: Map<Coord, Cube>) {
     fun activeCubes(): List<Cube> {
         return cubes.values.filter { it.isActive }
     }
@@ -11,7 +10,7 @@ class PocketDimension(val cubes: Map<Coord3d, Cube>) {
     fun cycle(): PocketDimension {
         return PocketDimension(
             expandCubeDimensions()
-                .map { it.copy(isActive = shouldBeActive(it, cubes)) }
+                .map { it.copy(isActive = shouldBeActive(it)) }
                 .map { it.location to it }
                 .toMap()
         )
@@ -26,33 +25,28 @@ class PocketDimension(val cubes: Map<Coord3d, Cube>) {
         return cubes.values
             .filter { it.isActive }
             .flatMap { cube ->
-                cube.location.neighbours()
-                    .map { location ->
-                        cubes.getOrElse(location) { Cube(location, false) }
-                    }
+                getNeighbouringCubes(cube)
             }
     }
 
-    private fun shouldBeActive(cube: Cube, cubes: Map<Coord3d, Cube>): Boolean {
-        return cube.isActive && cube.has2Or3ActiveNeighbours(cubes)
+    private fun getNeighbouringCubes(cube: Cube) =
+        cube.location.neighbours
+            .map { location -> cubes.getOrElse(location) { Cube(location, false) }}
+
+    private fun shouldBeActive(cube: Cube): Boolean =
+        cube.isActive && cube.has2Or3ActiveNeighbours(cubes)
                 || cube.has3ActiveNeighbours(cubes)
-    }
 
 }
 
-data class Cube(val location: Coord3d, val isActive: Boolean) {
-    fun has2Or3ActiveNeighbours(others: Map<Coord3d, Cube>): Boolean {
-        return this.location.neighbours().asSequence()
-            .filter { others[it]?.isActive ?: false }
-            .take(4).toList()
-            .size in 2..3
-    }
+data class Cube(val location: Coord, val isActive: Boolean) {
+    fun has2Or3ActiveNeighbours(others: Map<Coord, Cube>): Boolean = hasActiveNeighboursInRange(others, 2..3)
 
-    fun has3ActiveNeighbours(others: Map<Coord3d, Cube>): Boolean {
-        // todo: duplication
-        return this.location.neighbours().asSequence()
+    fun has3ActiveNeighbours(others: Map<Coord, Cube>): Boolean = hasActiveNeighboursInRange(others, 3..3)
+
+    private fun hasActiveNeighboursInRange(others: Map<Coord, Cube>, range: IntRange): Boolean =
+        this.location.neighbours.asSequence()
             .filter { others[it]?.isActive ?: false }
             .take(4).toList()
-            .size == 3
-    }
+            .size in range
 }
