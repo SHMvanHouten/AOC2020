@@ -33,79 +33,10 @@ class Day16Test {
                             Rule("departure location", 37..479 to 485..954),
                             Rule("departure station", 35..653 to 668..974)
                         ),
-                        Ticket(
-                            listOf(
-                                97,
-                                101,
-                                149,
-                                103,
-                                137,
-                                61,
-                                59,
-                                223,
-                                263,
-                                179,
-                                131,
-                                113,
-                                241,
-                                127,
-                                53,
-                                109,
-                                89,
-                                173,
-                                107,
-                                211
-                            )
-                        ),
+                        Ticket(listOf(97,101,149,103,137,61,59,223,263,179,131,113,241,127,53,109,89,173,107,211)),
                         listOf(
-                            Ticket(
-                                listOf(
-                                    446,
-                                    499,
-                                    748,
-                                    453,
-                                    135,
-                                    109,
-                                    525,
-                                    721,
-                                    179,
-                                    796,
-                                    622,
-                                    944,
-                                    175,
-                                    303,
-                                    882,
-                                    287,
-                                    177,
-                                    185,
-                                    828,
-                                    423
-                                )
-                            ),
-                            Ticket(
-                                listOf(
-                                    875,
-                                    895,
-                                    652,
-                                    511,
-                                    224,
-                                    634,
-                                    100,
-                                    622,
-                                    677,
-                                    415,
-                                    223,
-                                    620,
-                                    57,
-                                    841,
-                                    511,
-                                    532,
-                                    476,
-                                    716,
-                                    887,
-                                    674
-                                )
-                            )
+                            Ticket(listOf(446,499,748,453,135,109,525,721,179,796,622,944,175,303,882,287,177,185,828,423)),
+                            Ticket(listOf(875,895,652,511,224,634,100,622,677,415,223,620,57,841,511,532,476,716,887,674))
                         )
                     )
                 )
@@ -124,7 +55,7 @@ class Day16Test {
                     )
                 )
 
-                assertThat(listInvalidValues(input), isEmpty)
+                assertThat(input.listInvalidValues(input), isEmpty)
             }
 
             @Test
@@ -137,7 +68,7 @@ class Day16Test {
                     )
                 )
 
-                assertThat(listInvalidValues(input), equalTo(listOf(4)))
+                assertThat(input.listInvalidValues(input), equalTo(listOf(4)))
             }
 
             @Test
@@ -150,7 +81,7 @@ class Day16Test {
                     )
                 )
 
-                assertThat(listInvalidValues(input), isEmpty)
+                assertThat(input.listInvalidValues(input), isEmpty)
             }
 
             @Test
@@ -166,7 +97,7 @@ class Day16Test {
                     )
                 )
 
-                assertThat(listInvalidValues(input), isEmpty)
+                assertThat(input.listInvalidValues(input), isEmpty)
             }
 
             @Test
@@ -180,7 +111,7 @@ class Day16Test {
                     )
                 )
 
-                assertThat(listInvalidValues(input), equalTo(listOf(4)))
+                assertThat(input.listInvalidValues(input), equalTo(listOf(4)))
             }
 
             @Test
@@ -200,14 +131,14 @@ class Day16Test {
                     38,6,12
                 """.trimIndent()
                 val input = parse(notes)
-                assertThat(listInvalidValues(input), equalTo(listOf(4, 55, 12)))
-                assertThat(listInvalidValues(input).sum(), equalTo(71))
+                assertThat(input.listInvalidValues(input), equalTo(listOf(4, 55, 12)))
+                assertThat(input.listInvalidValues(input).sum(), equalTo(71))
             }
 
             @Test
             internal fun `part 1`() {
                 val input = parse(readFile("/input-day16.txt"))
-                assertThat(listInvalidValues(input).sum(), equalTo(20013))
+                assertThat(input.listInvalidValues(input).sum(), equalTo(20013))
             }
         }
     }
@@ -352,9 +283,9 @@ class Day16Test {
                 ticketsState.matchMyTicketFields(),
                 equalTo(
                     listOf(
+                        "seat" to 13,
                         "class" to 12,
-                        "row" to 11,
-                        "seat" to 13
+                        "row" to 11
                     )
                 )
             )
