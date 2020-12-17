@@ -32,32 +32,37 @@ data class TicketsState(val rules: List<Rule>, val myTicket: Ticket, val tickets
     }
 
     private fun deDuplicateIndexes(possibleIndexesByRule: List<Pair<String, List<Int>>>): Map<Int, String> {
-        val list = possibleIndexesByRule.toMutableList()
-        var nextIndexToUniquify = list.indexOfFirst { it.second.size > 1 }
+        var list = possibleIndexesByRule
 
         while (list.map { it.second }.any { it.size != 1 }) {
-            var nextNameToTryToUniquify = list[nextIndexToUniquify]
-            val (name, indexes) = nextNameToTryToUniquify
-            val indexToRemove = list.asSequence()
-                .filter { it.second.size == 1 }
-                .map { it.second[0] }
-                .find { indexes.contains(it) }
-            if(indexToRemove == null) {
-                nextIndexToUniquify = findNextIndexOfEntryWithMultipleIndexes(list, nextIndexToUniquify)
-            } else {
-                nextNameToTryToUniquify = name to indexes - indexToRemove
-                list[nextIndexToUniquify] = nextNameToTryToUniquify
-                if(nextNameToTryToUniquify.second.size == 1) {
-                    nextIndexToUniquify = findNextIndexOfEntryWithMultipleIndexes(list, nextIndexToUniquify)
-                    if(nextIndexToUniquify == -1) {
-                        break
-                    }
-                }
-            }
+            val takenIndexes = list.map { it.second }
+                .filter { it.size == 1 }
+                .map { it[0] }
+            list = removeTakenIndices(list, takenIndexes)
+
         }
         return list
             .map { it.second[0] to it.first }
             .toMap()
+    }
+
+    private fun removeTakenIndices(
+        list: List<Pair<String, List<Int>>>,
+        takenIndices: List<Int>
+    ): List<Pair<String, List<Int>>> {
+        return list
+            .map {
+                if(it.second.size > 1) {
+                    removeTakenIndices(it, takenIndices)
+                } else {
+                    it
+                }
+            }
+    }
+
+    private fun removeTakenIndices(entry: Pair<String, List<Int>>, takenIndices: List<Int>): Pair<String, List<Int>> {
+        val (name, indices) = entry
+        return name to indices - takenIndices
     }
 
     private fun findNextIndexOfEntryWithMultipleIndexes(
