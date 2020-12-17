@@ -33,28 +33,25 @@ data class TicketsState(val rules: List<Rule>, val myTicket: Ticket, val tickets
 
     private fun deDuplicateIndexes(possibleIndexesByRule: List<Pair<String, List<Int>>>): Map<Int, String> {
         val list = possibleIndexesByRule.toMutableList()
-        var nextNameToTryToUniquify = list.first { it.second.size > 1 }
+        var nextIndexToUniquify = list.indexOfFirst { it.second.size > 1 }
 
         while (list.map { it.second }.any { it.size != 1 }) {
+            var nextNameToTryToUniquify = list[nextIndexToUniquify]
             val (name, indexes) = nextNameToTryToUniquify
-            val index = list.indexOf(nextNameToTryToUniquify)
             val indexToRemove = list.asSequence()
                 .filter { it.second.size == 1 }
                 .map { it.second[0] }
                 .find { indexes.contains(it) }
             if(indexToRemove == null) {
-                nextNameToTryToUniquify = list.subList(list.indexOf(nextNameToTryToUniquify) + 1, list.size)
-                    .first { it.second.size > 1 }
+                nextIndexToUniquify = findNextIndexOfEntryWithMultipleIndexes(list, nextIndexToUniquify)
             } else {
                 nextNameToTryToUniquify = name to indexes - indexToRemove
-                list[index] = nextNameToTryToUniquify
+                list[nextIndexToUniquify] = nextNameToTryToUniquify
                 if(nextNameToTryToUniquify.second.size == 1) {
-                    val subList = list.subList(list.indexOf(nextNameToTryToUniquify) + 1, list.size)
-                        .filter { it.second.size > 1 }
-                    if(subList.isEmpty()) {
+                    nextIndexToUniquify = findNextIndexOfEntryWithMultipleIndexes(list, nextIndexToUniquify)
+                    if(nextIndexToUniquify == -1) {
                         break
                     }
-                    nextNameToTryToUniquify = subList[0]
                 }
             }
         }
@@ -62,6 +59,12 @@ data class TicketsState(val rules: List<Rule>, val myTicket: Ticket, val tickets
             .map { it.second[0] to it.first }
             .toMap()
     }
+
+    private fun findNextIndexOfEntryWithMultipleIndexes(
+        list: MutableList<Pair<String, List<Int>>>,
+        nextIndexToUniquify: Int
+    ) = list.subList(nextIndexToUniquify + 1, list.size)
+        .indexOfFirst { it.second.size > 1 } + nextIndexToUniquify + 1
 
     private fun findIndexWhereAllTicketsMatchRule(tickets: List<Ticket>, rule: Rule): List<Int> {
         val indexes = 0.until(tickets[0].fields.size).filter { index ->

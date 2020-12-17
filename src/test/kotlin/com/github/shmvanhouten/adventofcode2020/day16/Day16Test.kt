@@ -1,5 +1,6 @@
 package com.github.shmvanhouten.adventofcode2020.day16
 
+import com.github.shmvanhouten.adventofcode2019.day12.tick
 import com.github.shmvanhouten.adventofcode2020.util.FileReader.readFile
 import com.natpryce.hamkrest.allElements
 import com.natpryce.hamkrest.assertion.assertThat
@@ -366,17 +367,39 @@ class Day16Test {
         @Test
         internal fun `part 2`() {
             val ticketsState = parse(readFile("/input-day16.txt"))
+            //"(departure location, [4])"             <==  "(departure location, [1, 3, 4, 5, 9, 10, 14, 15, 16, 17])"
+            //"(departure station, [0])"              <==  "(departure station, [0, 1, 3, 4, 5, 7, 9, 10, 14, 15, 16, 17])"
+            //"(departure platform, [16])"            <==  "(departure platform, [1, 3, 5, 9, 14, 15, 16])"
+            //"(departure track, [17])"               <==  "(departure track, [1, 3, 5, 9, 10, 14, 15, 16, 17])"
+            //"(departure date, [7])"                 <==  "(departure date, [1, 3, 4, 5, 7, 9, 10, 14, 15, 16, 17])"
+            //"(departure time, [10])"                <==  "(departure time, [1, 3, 5, 9, 10, 14, 15, 16])"
+            //"(arrival location, [3])"               <==  "(arrival location, [3])"
+            //"(arrival station, [11])"               <==  "(arrival station, [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18])"
+            //"(arrival platform, [5])"               <==  "(arrival platform, [5, 9, 14])"
+            //"(arrival track, [13])"                 <==  "(arrival track, [0, 1, 4, 5, 7, 9, 10, 13, 14, 15, 16, 17])"
+            //"(class, [1])"                          <==  "(class, [1, 5, 9, 14, 15])"
+            //"(duration, [14])"                      <==  "(duration, [9, 14])"
+            //"(price, [6])"                          <==  "(price, [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17, 18])"
+            //"(route, [2])"                          <==  "(route, [0, 1, 2, 4, 5, 7, 9, 10, 13, 14, 15, 16, 17, 18])"
+            //"(row, [12])"                           <==  "(row, [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18])"
+            //"(seat, [8])"                           <==  "(seat, [0, 1, 2, 4, 5, 7, 8, 9, 10, 13, 14, 15, 16, 17, 18])"
+            //"(train, [19])"                         <==  "(train, [19])"
+            //"(type, [18])"                          <==  "(type, [0, 1, 4, 5, 7, 9, 10, 13, 14, 15, 16, 17, 18])"
+            //"(wagon, [9])"                          <==  "(wagon, [9])"
+            //"(zone, [15])"                          <==  "(zone, [5, 14, 15])"
+            // todo: sudokud it for now, could just brute force instead
+            println(listOf(4, 0, 16, 17, 7, 10).map { ticketsState.myTicket[it].toLong() }.reduce { acc, i -> acc * i })
 
-            assertThat(
-                ticketsState.matchMyTicketFields(),
-                equalTo(
-                    listOf(
-                        "class" to 12,
-                        "row" to 11,
-                        "seat" to 13
-                    )
-                )
-            )
+//            assertThat(
+//                ticketsState.matchMyTicketFields(),
+//                equalTo(
+//                    listOf(
+//                        "class" to 12,
+//                        "row" to 11,
+//                        "seat" to 13
+//                    )
+//                )
+//            )
         }
     }
 
