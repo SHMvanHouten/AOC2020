@@ -81,4 +81,43 @@ class Day18Test {
         }
     }
 
+    @Nested
+    inner class Part2 {
+        @ParameterizedTest
+        @CsvSource(
+            "1 + (2 * 3) + (4 * (5 + 6)), 51",
+            "2 * 3 + (4 * 5), 46",
+            "5 + (8 * 3 + 9 + 3 * 4 * 3), 1445",
+            "5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4)), 669060",
+            "((2 + 4) * 9), 54",
+            "(((6 + 9) * (8 + 6)) + 6), 216",
+            "((6 + 9 * 8 + 6) + 6), 216",
+            "(6 + 9 * 8 + 6), 210",
+            "((2 + 4) * 9) * (((6 + 9) * (8 + 6)) + 6), 11664",
+            "((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6), 11664",
+            "((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2, 23340",
+        )
+        internal fun `example part 2`(
+            sum: String,
+            expectedResult: Long
+        ) {
+            assertThat(advancedEvaluate(sum), equalTo(expectedResult) )
+        }
+
+        @Test
+        internal fun `part 2`() {
+            assertThat(
+                readFile("/input-day18.txt").lines()
+                    .map { advancedEvaluate(it) }
+                    .sum(),
+                equalTo(119224703255966)
+            )
+        }
+    }
+
+    // ((2 + 4) * 9) * (((6 + 9) * (8 + 6)) + 6)
+    //      72
+    // 11664
+    // 11670 * 2
+
 }

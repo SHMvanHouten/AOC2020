@@ -7,6 +7,9 @@ fun evaluateWrong(expression: String): Long {
         return expression.toLong()
     }
 
+//    when(expression[0]) {
+//        in '0'..'9' ->
+//    }
     val (number, rest) = expression.splitIntoTwo(" ")
     return number.toLong().operate(rest[0], evaluateWrong(rest.substring(2)))
 
