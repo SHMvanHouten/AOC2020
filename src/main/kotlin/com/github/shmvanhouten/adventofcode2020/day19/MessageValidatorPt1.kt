@@ -2,41 +2,38 @@ package com.github.shmvanhouten.adventofcode2020.day19
 
 import java.util.*
 
-class MessageValidator(unparsedRules: List<String>) {
+class MessageValidatorPt1(unparsedRules: List<String>) {
 
     private val rules: Map<Int, Rule> = parseRules(unparsedRules)
-    private val allowed = listAllowedStrings()
 
-    fun filterValid(messages: List<String>): List<String> {
-        return messages.filter { isValid(it) }
-    }
-
-    private fun isValid(message: String): Boolean {
-
-        return allowed.contains(message)
-    }
-
-    private fun listAllowedStrings(): Set<String> {
-        return expandMessagesFromRule()
-    }
-
-    private fun expandMessagesFromRule(): Set<String> {
-//        val unfinishedMessages: Queue<Pair<Rule, String>> = LinkedList(rules.values.map { it to "" })
+    fun filterValid(messages: List<String>): Collection<String> {
         val unfinishedMessages: Queue<Pair<Rule, String>> = LinkedList(listOf(rules[0]!! to ""))
-        val validMessages = mutableSetOf<String>()
+        val unmatchedMessages: MutableSet<String> = messages.toMutableSet()
+        val validMessages = mutableListOf<String>()
 
         while (unfinishedMessages.isNotEmpty()) {
             val (remainingRule, message) = unfinishedMessages.poll()!!
+            val regex = Regex("^$message.*")
+            if(message.isNotEmpty() && unmatchedMessages.none { regex.matches(it) }) {
+                continue
+            }
             when (remainingRule) {
                 is FinalRule -> {
-                    validMessages += message + remainingRule.value
+                    val finalMessage = message + remainingRule.value
+                    if(unmatchedMessages.contains(finalMessage)) {
+                        validMessages += finalMessage
+                        unmatchedMessages.remove(finalMessage)
+                    }
                 }
                 is ReferenceRule -> {
-                    val firstReferencedRule = rules[remainingRule.references.first()]
-                    when(firstReferencedRule) {
+                    when(val firstReferencedRule = rules[remainingRule.references.first()]) {
                         is FinalRule -> {
                             if(remainingRule.references.size == 1) {
-                                validMessages += message + firstReferencedRule.value
+                                val finalMessage = message + firstReferencedRule.value
+                                if(unmatchedMessages.contains(finalMessage)) {
+                                    validMessages += finalMessage
+                                    unmatchedMessages.remove(finalMessage)
+                                }
                             } else {
                                 unfinishedMessages.offer(ReferenceRule(references = remainingRule.references.tail()) to message + firstReferencedRule.value)
                             }
@@ -52,10 +49,6 @@ class MessageValidator(unparsedRules: List<String>) {
             }
         }
         return validMessages
-    }
-
-    private fun parseRules(unparsedRules: List<String>): Map<Int, Rule> {
-        return unparsedRules.map { toRule(it) }.associateBy { it.ruleNumber }
     }
 }
 

@@ -35,6 +35,10 @@ fun toConditionalRule(unparsedRule: String): Rule {
     )
 }
 
+fun parseRules(unparsedRules: List<String>): Map<Int, Rule> {
+    return unparsedRules.map { toRule(it) }.associateBy { it.ruleNumber }
+}
+
 fun parseRuleReferences(rule: String): List<Int> {
     return rule
         .substringAfter(": ")
