@@ -21,7 +21,7 @@ class Day14Test {
             """.trimMargin()
             val seaPortComputer = SeaPortComputer()
             seaPortComputer.initialize(program.lines())
-            assertThat(seaPortComputer.sumMemory(), equalTo(73))
+            assertThat(seaPortComputer.sumMemory(), equalTo(73L))
         }
 
         @Test
@@ -32,7 +32,7 @@ class Day14Test {
             """.trimMargin()
             val seaPortComputer = SeaPortComputer()
             seaPortComputer.initialize(program.lines())
-            assertThat(seaPortComputer.sumMemory(), equalTo(101))
+            assertThat(seaPortComputer.sumMemory(), equalTo(101L))
         }
 
         @Test
@@ -45,7 +45,7 @@ class Day14Test {
             """.trimMargin()
             val seaPortComputer = SeaPortComputer()
             seaPortComputer.initialize(program.lines())
-            assertThat(seaPortComputer.sumMemory(), equalTo(165))
+            assertThat(seaPortComputer.sumMemory(), equalTo(165L))
         }
 
         @Test
@@ -70,7 +70,7 @@ class Day14Test {
             """.trimMargin()
             val seaPortComputer = SeaPortComputerV2()
             seaPortComputer.initialize(program)
-            assertThat(seaPortComputer.sumMemory(), equalTo(208))
+            assertThat(seaPortComputer.sumMemory(), equalTo(208L))
         }
 
         @Test

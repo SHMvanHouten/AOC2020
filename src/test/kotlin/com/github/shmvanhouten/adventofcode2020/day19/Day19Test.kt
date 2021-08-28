@@ -153,9 +153,9 @@ aaaabbb""")
 
     private fun splitRulesAndInputs(input: String): Pair<List<String>, List<String>> {
         val blocks = input.blocks()
-        val rules = parseRules(blocks[0])
+//        val rules = parseRules(blocks[0])
         val inputs = blocks[1].lines()
-        return rules to inputs
+        return blocks[0].lines() to inputs
     }
 
     private fun parseRules(rulesInput: String) = rulesInput.lines()

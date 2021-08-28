@@ -178,7 +178,7 @@ class Day16Test {
                 ),
                 myTicket = Ticket(fields = listOf(12)),
                 tickets = listOf(
-                    Ticket(fields = listOf(1)),
+                    Ticket(fields = listOf(1))
                 )
             )
 
@@ -200,7 +200,7 @@ class Day16Test {
                 ),
                 myTicket = Ticket(fields = listOf(11)),
                 tickets = listOf(
-                    Ticket(fields = listOf(1)),
+                    Ticket(fields = listOf(1))
                 )
             )
 
@@ -223,7 +223,7 @@ class Day16Test {
                 ),
                 myTicket = Ticket(fields = listOf(11, 3)),
                 tickets = listOf(
-                    Ticket(fields = listOf(1, 13)),
+                    Ticket(fields = listOf(1, 13))
                 )
             )
 
@@ -248,7 +248,7 @@ class Day16Test {
                 ),
                 myTicket = Ticket(fields = listOf(11, 4)),
                 tickets = listOf(
-                           Ticket(fields = listOf(1, 13)),
+                           Ticket(fields = listOf(1, 13))
                 )
             )
 
