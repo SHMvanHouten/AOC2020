@@ -5,7 +5,24 @@ import com.github.shmvanhouten.adventofcode2017.util.splitIntoTwo
 open class Rule(val ruleNumber: Int)
 
 data class FinalRule(val number: Int, val value: Char) : Rule(number)
-data class ReferenceRule(val number: Int = -1, val references: List<Int>, val otherReferences: List<Int>? = null) : Rule(number)
+data class ReferenceRule(val number: Int = -1, val references: List<Int>, val otherReferences: List<Int>? = null) : Rule(number) {
+    fun hasDivergingPaths(): Boolean {
+        return this.otherReferences != null
+    }
+
+    fun withoutFirstReference(): ReferenceRule {
+        return ReferenceRule(references = this.references.tail())
+    }
+
+    fun replaceFirstReferenceWith(otherReferences: List<Int>): ReferenceRule {
+        return ReferenceRule(references = otherReferences + this.references.tail())
+    }
+
+    fun firstReferencedRule(rules: Map<Int, Rule>): Rule {
+        return rules[references.first()]
+            ?: throw Error("Reference ${references.first()} not found in ruleset $rules")
+    }
+}
 
 fun toRule(unparsedRule: String): Rule {
     return if (unparsedRule.contains("\"")) {
@@ -48,3 +65,7 @@ fun parseRuleReferences(rule: String): List<Int> {
 }
 
 private fun extractRuleNumber(unparsedRule: String) = unparsedRule.substringBefore(':').toInt()
+
+private fun <E> List<E>.tail(): List<E> {
+    return this.subList(1, this.size)
+}

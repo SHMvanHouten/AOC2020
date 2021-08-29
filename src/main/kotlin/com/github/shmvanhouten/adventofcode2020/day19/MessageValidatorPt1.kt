@@ -14,30 +14,49 @@ class MessageValidatorPt1(unparsedRules: List<String>) {
         while (unfinishedMessages.isNotEmpty()) {
             val (remainingRule, message) = unfinishedMessages.poll()!!
 
-            when (val firstReferencedRule = rules[remainingRule.references.first()]) {
+            when (val firstReferencedRule = remainingRule.firstReferencedRule(rules)) {
                 is FinalRule -> {
                     val updatedMessage = message + firstReferencedRule.value
-                    if (remainingRule.references.size == 1) {
-                        if (unmatchedMessages.contains(updatedMessage)) {
-                            validMessages += updatedMessage
-                            unmatchedMessages.remove(updatedMessage)
-                        }
-                    } else {
+                    if (remainingRule.references.size > 1) {
                         val regex = Regex("^$updatedMessage.*")
-                        if(unmatchedMessages.any { regex.matches(it) }) {
-                            unfinishedMessages.offer(ReferenceRule(references = remainingRule.references.tail()) to updatedMessage)
+                        if (unmatchedMessages.any { regex.matches(it) }) {
+                            unfinishedMessages.offer(remainingRule.withoutFirstReference() to updatedMessage)
                         }
+
+                    } else if (unmatchedMessages.contains(updatedMessage)) {
+                        move(updatedMessage)
+                            .from(unmatchedMessages)
+                            .to(validMessages)
                     }
+
                 }
                 is ReferenceRule -> {
-                    unfinishedMessages.offer(ReferenceRule(references = firstReferencedRule.references + remainingRule.references.tail()) to message)
-                    if (firstReferencedRule.otherReferences != null) {
-                        unfinishedMessages.offer(ReferenceRule(references = firstReferencedRule.otherReferences + remainingRule.references.tail()) to message)
-                    }
+                    unfinishedMessages.offer(
+                        remainingRule.replaceFirstReferenceWith(firstReferencedRule.references) to message
+                    )
+                    firstReferencedRule.otherReferences
+                        ?.let { remainingRule.replaceFirstReferenceWith(it) }
+                        ?.let { unfinishedMessages.offer(it to message) }
                 }
             }
         }
         return validMessages
+    }
+
+    private fun <T> move(element: T): ElementMoveDsl<T> {
+        return ElementMoveDsl(element)
+    }
+}
+
+class ElementMoveDsl<T>(private val element: T) {
+
+    fun to(collection: MutableCollection<T>) {
+        collection.add(element)
+    }
+
+    fun from(collection: MutableCollection<T>): ElementMoveDsl<T> {
+        collection.remove(element)
+        return this
     }
 }
 
