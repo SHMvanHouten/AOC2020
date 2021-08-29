@@ -20,7 +20,8 @@ class Day19Test {
         internal fun `rule 0 is a matches a`() {
             val (rules, inputs) = splitRulesAndInputs(
                 """
-                                    |0: "a"
+                                    |0: 1
+                                    |1: "a"
                                     |
                                     |a
                                 """.trimMargin()
@@ -34,7 +35,8 @@ class Day19Test {
         internal fun `rule 0 is a does not match b`() {
             val (rules, inputs) = splitRulesAndInputs(
                 """
-                                    |0: "a"
+                                    |0: 1
+                                    |1: "a"
                                     |
                                     |b
                                 """.trimMargin()
@@ -48,7 +50,8 @@ class Day19Test {
         internal fun `rule 0 is b matches b`() {
             val (rules, inputs) = splitRulesAndInputs(
                 """
-                                    |0: "b"
+                                    |0: 1
+                                    |1: "b"
                                     |
                                     |b
                                 """.trimMargin()
