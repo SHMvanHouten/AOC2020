@@ -2,34 +2,45 @@ package com.github.shmvanhouten.adventofcode2020.day19
 
 import com.github.shmvanhouten.adventofcode2017.util.splitIntoTwo
 
-open class Rule(val ruleNumber: Int)
+interface Rule {
+    val message: String
+}
 
-data class FinalRule(val number: Int, val value: Char) : Rule(number)
-data class ReferenceRule(val number: Int = -1, val references: List<Int>, val otherReferences: List<Int>? = null) : Rule(number) {
-    fun hasDivergingPaths(): Boolean {
-        return this.otherReferences != null
-    }
+data class FinalRule(override val message: String) : Rule
+data class ReferenceRule(
+    val references: List<Int>,
+    val otherReferences: List<Int>? = null,
+    override val message: String = ""
+) : Rule {
 
     fun withoutFirstReference(): ReferenceRule {
-        return ReferenceRule(references = this.references.tail())
+        return this.copy(references = this.references.tail())
     }
 
     fun replaceFirstReferenceWith(otherReferences: List<Int>): ReferenceRule {
-        return ReferenceRule(references = otherReferences + this.references.tail())
+        return this.copy(references = otherReferences + this.references.tail())
     }
 
     fun firstReferencedRule(rules: Map<Int, Rule>): Rule {
         return rules[references.first()]
             ?: throw Error("Reference ${references.first()} not found in ruleset $rules")
     }
+
+    fun mergeFirstReference(rules: Map<Int, Rule>): ReferenceRule {
+        return this.copy(
+            references = references.tail(),
+            message = message + firstReferencedRule(rules).message
+        )
+    }
 }
 
-fun toRule(unparsedRule: String): Rule {
-    return if (unparsedRule.contains("\"")) {
-        FinalRule(extractRuleNumber(unparsedRule), unparsedRule.substringAfter(": ")[1])
-    } else {
-        toReferenceRule(unparsedRule)
-    }
+fun toNumberedRule(unparsedRule: String): Pair<Int, Rule> {
+    return extractRuleNumber(unparsedRule) to
+            if (unparsedRule.contains("\"")) {
+                FinalRule(unparsedRule.substringAfter(": ")[1].toString())
+            } else {
+                toReferenceRule(unparsedRule)
+            }
 }
 
 fun toReferenceRule(unparsedRule: String): Rule {
@@ -37,7 +48,6 @@ fun toReferenceRule(unparsedRule: String): Rule {
         toConditionalRule(unparsedRule)
     } else {
         ReferenceRule(
-            extractRuleNumber(unparsedRule),
             parseRuleReferences(unparsedRule)
         )
     }
@@ -46,14 +56,13 @@ fun toReferenceRule(unparsedRule: String): Rule {
 fun toConditionalRule(unparsedRule: String): Rule {
     val (ruleReferences1, ruleReferences2) = unparsedRule.splitIntoTwo(" | ")
     return ReferenceRule(
-        extractRuleNumber(unparsedRule),
         parseRuleReferences(ruleReferences1),
         parseRuleReferences(ruleReferences2)
     )
 }
 
 fun parseRules(unparsedRules: List<String>): Map<Int, Rule> {
-    return unparsedRules.map { toRule(it) }.associateBy { it.ruleNumber }
+    return unparsedRules.associate { toNumberedRule(it) }
 }
 
 fun parseRuleReferences(rule: String): List<Int> {

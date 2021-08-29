@@ -7,24 +7,24 @@ class MessageValidatorPt1(unparsedRules: List<String>) {
     private val rules: Map<Int, Rule> = parseRules(unparsedRules)
 
     fun filterValid(messages: List<String>): Collection<String> {
-        val unfinishedMessages: Queue<Pair<ReferenceRule, String>> = LinkedList(listOf(rules[0]!! as ReferenceRule to ""))
+        val unfinishedMessages: Queue<ReferenceRule> = LinkedList(listOf(rules[0]!! as ReferenceRule))
         val unmatchedMessages: MutableSet<String> = messages.toMutableSet()
         val validMessages = mutableListOf<String>()
 
         while (unfinishedMessages.isNotEmpty()) {
-            val (remainingRule, message) = unfinishedMessages.poll()!!
+            val rule = unfinishedMessages.poll()!!
 
-            when (val firstReferencedRule = remainingRule.firstReferencedRule(rules)) {
+            when (val firstReferencedRule = rule.firstReferencedRule(rules)) {
                 is FinalRule -> {
-                    val updatedMessage = message + firstReferencedRule.value
-                    if (remainingRule.references.size > 1) {
-                        val regex = Regex("^$updatedMessage.*")
+                    val updatedRule = rule.mergeFirstReference(rules)
+                    if (updatedRule.references.isNotEmpty()) {
+                        val regex = Regex("^${updatedRule.message}.*")
                         if (unmatchedMessages.any { regex.matches(it) }) {
-                            unfinishedMessages.offer(remainingRule.withoutFirstReference() to updatedMessage)
+                            unfinishedMessages.offer(updatedRule)
                         }
 
-                    } else if (unmatchedMessages.contains(updatedMessage)) {
-                        move(updatedMessage)
+                    } else if (unmatchedMessages.contains(updatedRule.message)) {
+                        move(updatedRule.message)
                             .from(unmatchedMessages)
                             .to(validMessages)
                     }
@@ -32,11 +32,11 @@ class MessageValidatorPt1(unparsedRules: List<String>) {
                 }
                 is ReferenceRule -> {
                     unfinishedMessages.offer(
-                        remainingRule.replaceFirstReferenceWith(firstReferencedRule.references) to message
+                        rule.replaceFirstReferenceWith(firstReferencedRule.references)
                     )
                     firstReferencedRule.otherReferences
-                        ?.let { remainingRule.replaceFirstReferenceWith(it) }
-                        ?.let { unfinishedMessages.offer(it to message) }
+                        ?.let { rule.replaceFirstReferenceWith(it) }
+                        ?.let { unfinishedMessages.offer(it) }
                 }
             }
         }
