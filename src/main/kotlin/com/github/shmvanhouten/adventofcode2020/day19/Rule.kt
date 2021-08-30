@@ -13,24 +13,23 @@ data class ReferenceRule(
     override val message: String = ""
 ) : Rule {
 
-    fun withoutFirstReference(): ReferenceRule {
-        return this.copy(references = this.references.tail())
-    }
-
-    fun replaceFirstReferenceWith(otherReferences: List<Int>): ReferenceRule {
-        return this.copy(references = otherReferences + this.references.tail())
-    }
-
     fun firstReferencedRule(rules: Map<Int, Rule>): Rule {
         return rules[references.first()]
             ?: throw Error("Reference ${references.first()} not found in ruleset $rules")
     }
 
     fun mergeFirstReference(rules: Map<Int, Rule>): ReferenceRule {
-        return this.copy(
-            references = references.tail(),
-            message = message + firstReferencedRule(rules).message
-        )
+        return when(val firstReferencedRule = firstReferencedRule(rules)) {
+            is FinalRule -> this.copy(
+                references = references.tail(),
+                message = message + firstReferencedRule.message
+            )
+            is ReferenceRule -> this.copy(
+                references = firstReferencedRule.references + references.tail(),
+                otherReferences = firstReferencedRule.otherReferences?.plus(references.tail())
+            )
+            else -> throw Error()
+        }
     }
 }
 

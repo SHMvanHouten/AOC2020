@@ -1,6 +1,5 @@
 package com.github.shmvanhouten.adventofcode2020.day19
 
-import com.github.shmvanhouten.adventofcode2017.util.splitIntoTwo
 import com.github.shmvanhouten.adventofcode2020.util.FileReader.readFile
 import com.github.shmvanhouten.adventofcode2020.util.blocks
 import com.natpryce.hamkrest.assertion.assertThat
@@ -107,7 +106,7 @@ b"""
             val validator = MessageValidatorPt1(rules)
 
             assertThat(validator.filterValid(inputs), hasSize(equalTo(2)))
-            assertThat(validator.filterValid(inputs), equalTo(listOf("a", "b")))
+            assertThat(validator.filterValid(inputs), equalTo(listOf("b", "a")))
         }
 
         @Test

@@ -14,34 +14,53 @@ class MessageValidatorPt1(unparsedRules: List<String>) {
         while (unfinishedMessages.isNotEmpty()) {
             val rule = unfinishedMessages.poll()!!
 
-            when (val firstReferencedRule = rule.firstReferencedRule(rules)) {
-                is FinalRule -> {
-                    val updatedRule = rule.mergeFirstReference(rules)
-                    if (updatedRule.references.isNotEmpty()) {
-                        val regex = Regex("^${updatedRule.message}.*")
-                        if (unmatchedMessages.any { regex.matches(it) }) {
-                            unfinishedMessages.offer(updatedRule)
-                        }
+            if (rule.otherReferences != null) {
+                splitUpRule(unfinishedMessages, rule)
 
-                    } else if (unmatchedMessages.contains(updatedRule.message)) {
-                        move(updatedRule.message)
-                            .from(unmatchedMessages)
-                            .to(validMessages)
-                    }
+            } else {
+                val updatedRule = rule.mergeFirstReference(rules)
+                if (shouldProcessRuleFurther(updatedRule, rule, unmatchedMessages)) {
+                        unfinishedMessages.offer(updatedRule)
 
-                }
-                is ReferenceRule -> {
-                    unfinishedMessages.offer(
-                        rule.replaceFirstReferenceWith(firstReferencedRule.references)
-                    )
-                    firstReferencedRule.otherReferences
-                        ?.let { rule.replaceFirstReferenceWith(it) }
-                        ?.let { unfinishedMessages.offer(it) }
+                } else if (unmatchedMessages.contains(updatedRule.message)) {
+                    move(updatedRule.message)
+                        .from(unmatchedMessages)
+                        .to(validMessages)
                 }
             }
         }
         return validMessages
     }
+
+    private fun splitUpRule(
+        unfinishedMessages: Queue<ReferenceRule>,
+        rule: ReferenceRule
+    ) {
+        unfinishedMessages.offer(rule.copy(otherReferences = null))
+        unfinishedMessages.offer(rule.copy(references = rule.otherReferences!!, otherReferences = null))
+    }
+
+    private fun shouldProcessRuleFurther(
+        updatedRule: ReferenceRule,
+        rule: ReferenceRule,
+        unmatchedMessages: MutableSet<String>
+    ) = (updatedRule.references.isNotEmpty()
+            && messageMatchIsStillPossible(rule, updatedRule, unmatchedMessages))
+
+    private fun messageMatchIsStillPossible(
+        rule: ReferenceRule,
+        updatedRule: ReferenceRule,
+        unmatchedMessages: MutableSet<String>
+    ) = rule.message == updatedRule.message || messageIsStillViable(unmatchedMessages, updatedRule.message)
+
+    private fun messageIsStillViable(
+        unmatchedMessages: MutableSet<String>,
+        message: String
+    ): Boolean {
+        val regex = Regex("^$message.*")
+        return unmatchedMessages.any { regex.matches(it) }
+    }
+
 
     private fun <T> move(element: T): ElementMoveDsl<T> {
         return ElementMoveDsl(element)
