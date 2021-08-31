@@ -1,10 +1,41 @@
 package com.github.shmvanhouten.adventofcode2020.day20
 
 import com.github.shmvanhouten.adventofcode2020.util.blocks
+import java.util.*
+import kotlin.math.sqrt
 
-fun findCornerTiles(tiles: String): CornerTileArrangement {
+fun findCornerTiles(tiles: String): TileArrangement {
+    return rearrangeTiles(parseTiles(tiles))
+//    return rearrangeCornerTiles(parseTiles(tiles))
+}
 
-    return rearrangeCornerTiles(parseTiles(tiles))
+fun rearrangeTiles(tiles: List<Tile>): TileArrangement {
+    val squareSize = sqrt(tiles.size.toFloat()).toInt()
+    val unfinishedTileArrangements: Queue<TileArrangement> = LinkedList(tiles.map { TileArrangement(it, tiles - it) })
+    while (unfinishedTileArrangements.isNotEmpty()) {
+        val arrangement = unfinishedTileArrangements.poll()!!
+        if(arrangement.unplacedTiles.isEmpty()) {
+            return arrangement
+        }
+
+        if (arrangement.lastPlaced.coordinate.x < squareSize - 1) {
+            unfinishedTileArrangements.offer(
+                arrangement.placeAllTilesPossiblesToTheRight()
+            )
+        } else if (arrangement.lastPlaced.coordinate.y < squareSize - 1) {
+            unfinishedTileArrangements.offer(
+                arrangement.placeAllTilesPossiblesToTheBottom()
+            )
+        }
+
+    }
+    throw Error("No tile arrangements found for tiles $tiles")
+}
+
+private fun <E> Queue<E>.offer(elements: List<E>) {
+    for (element in elements) {
+        this.offer(element)
+    }
 }
 
 private fun rearrangeCornerTiles(tiles: List<Tile>): CornerTileArrangement {

@@ -127,3 +127,19 @@ data class Coordinate(val x: Int, val y: Int) {
 fun Int.negate(): Int {
     return this * -1
 }
+
+fun <T> Map<Coordinate, T>.top(): Map<Coordinate, T> {
+    return this.filter { it.key.y == this.map{it.key.y}.min() }
+}
+
+fun <T> Map<Coordinate, T>.bottom(): Map<Coordinate, T> {
+    return this.filter { it.key.y == this.map{it.key.y}.max() }
+}
+
+fun <T> Map<Coordinate, T>.left(): T {
+    return this.minBy { it.key.x }!!.value
+}
+
+fun <T> Map<Coordinate, T>.right(): T {
+    return this.maxBy { it.key.x }!!.value
+}
