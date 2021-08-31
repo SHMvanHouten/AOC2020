@@ -31,29 +31,26 @@ class Day20Test {
                 |tile $secondID:
                 |..#
                 |#.#
-                |...
-                """.trimMargin()
+                |...""".trimMargin()
             val cornerTileArrangement: CornerTileArrangement = findCornerTiles(tiles)
-            assertThat(cornerTileArrangement.topLeft.id, equalTo(secondID))
+            assertThat(cornerTileArrangement.top.left.id, equalTo(secondID))
             assertThat(
-                cornerTileArrangement.topLeft.value,
+                cornerTileArrangement.top.left.value,
                 equalTo(
                     """
                     |..#
                     |#.#
-                    |...
-                    """.trimMargin()
+                    |...""".trimMargin()
                 )
             )
-            assertThat(cornerTileArrangement.topRight.id, equalTo(firstID))
+            assertThat(cornerTileArrangement.top.right.id, equalTo(firstID))
             assertThat(
-                cornerTileArrangement.topRight.value,
+                cornerTileArrangement.top.right.value,
                 equalTo(
                     """
                     |#.#
                     |#..
-                    |...
-                    """.trimMargin()
+                    |...""".trimMargin()
                 )
             )
         }
@@ -69,29 +66,26 @@ class Day20Test {
                 |tile 123:
                 |#..
                 |#.#
-                |...
-                """.trimMargin()
+                |...""".trimMargin()
             val cornerTileArrangement: CornerTileArrangement = findCornerTiles(tiles)
-            assertThat(cornerTileArrangement.topLeft.id, equalTo(456))
+            assertThat(cornerTileArrangement.top.left.id, equalTo(456))
             assertThat(
-                cornerTileArrangement.topLeft.value,
+                cornerTileArrangement.top.left.value,
                 equalTo(
                     """
                     |#.#
                     |..#
-                    |...
-                    """.trimMargin()
+                    |...""".trimMargin()
                 )
             )
-            assertThat(cornerTileArrangement.topRight.id, equalTo(123))
+            assertThat(cornerTileArrangement.top.right.id, equalTo(123))
             assertThat(
-                cornerTileArrangement.topRight.value,
+                cornerTileArrangement.top.right.value,
                 equalTo(
                     """
                     |#..
                     |#.#
-                    |...
-                    """.trimMargin()
+                    |...""".trimMargin()
                 )
             )
         }
@@ -107,29 +101,26 @@ class Day20Test {
                 |tile 123:
                 |...
                 |#..
-                |#.#
-                """.trimMargin()
+                |#.#""".trimMargin()
             val cornerTileArrangement: CornerTileArrangement = findCornerTiles(tiles)
-            assertThat(cornerTileArrangement.topLeft.id, equalTo(456))
+            assertThat(cornerTileArrangement.top.left.id, equalTo(456))
             assertThat(
-                cornerTileArrangement.topLeft.value,
+                cornerTileArrangement.top.left.value,
                 equalTo(
                     """
                     |...
                     |#.#
-                    |..#
-                    """.trimMargin()
+                    |..#""".trimMargin()
                 )
             )
-            assertThat(cornerTileArrangement.topRight.id, equalTo(123))
+            assertThat(cornerTileArrangement.top.right.id, equalTo(123))
             assertThat(
-                cornerTileArrangement.topRight.value,
+                cornerTileArrangement.top.right.value,
                 equalTo(
                     """
                     |...
                     |#..
-                    |#.#
-                    """.trimMargin()
+                    |#.#""".trimMargin()
                 )
             )
         }
@@ -145,29 +136,26 @@ class Day20Test {
                 |tile 123:
                 |#..
                 |..#
-                |#..
-                """.trimMargin()
+                |#..""".trimMargin()
             val cornerTileArrangement: CornerTileArrangement = findCornerTiles(tiles)
-            assertThat(cornerTileArrangement.topLeft.id, equalTo(456))
+            assertThat(cornerTileArrangement.top.left.id, equalTo(456))
             assertThat(
-                cornerTileArrangement.topLeft.value,
+                cornerTileArrangement.top.left.value,
                 equalTo(
                     """
                     |..#
                     |...
-                    |#.#
-                    """.trimMargin()
+                    |#.#""".trimMargin()
                 )
             )
-            assertThat(cornerTileArrangement.topRight.id, equalTo(123))
+            assertThat(cornerTileArrangement.top.right.id, equalTo(123))
             assertThat(
-                cornerTileArrangement.topRight.value,
+                cornerTileArrangement.top.right.value,
                 equalTo(
                     """
                     |#..
                     |..#
-                    |#..
-                    """.trimMargin()
+                    |#..""".trimMargin()
                 )
             )
         }
@@ -183,13 +171,101 @@ class Day20Test {
                 |tile 123:
                 |#..
                 |...
+                |#..""".trimMargin()
+            val cornerTileArrangement: CornerTileArrangement = findCornerTiles(tiles)
+            assertThat(cornerTileArrangement.top.left.id, equalTo(123))
+            assertThat(cornerTileArrangement.top.right.id, equalTo(456))
+        }
+
+        @Test
+        internal fun `the tiles line up top to bottom as well`() {
+            val tiles = """
+                |tile 123:
+                |##.
+                |...
+                |.#.
+                |
+                |tile 456:
+                |..#
+                |..#
+                |...
+                |
+                |tile 777:
+                |.#.
+                |...
+                |#.#
+                |
+                |tile 888:
+                |...
+                |..#
                 |#..
                 """.trimMargin()
             val cornerTileArrangement: CornerTileArrangement = findCornerTiles(tiles)
-            assertThat(cornerTileArrangement.topLeft.id, equalTo(123))
-            assertThat(cornerTileArrangement.topRight.id, equalTo(456))
+            assertThat(cornerTileArrangement.top.left.id, equalTo(123))
+            assertThat(cornerTileArrangement.top.right.id, equalTo(456))
+            assertThat(cornerTileArrangement.bottom.left.id, equalTo(777))
+            assertThat(cornerTileArrangement.bottom.right.id, equalTo(888))
         }
 
+        @Test
+        internal fun `the tiles line up top to bottom as well with last two tiles switched positions`() {
+            val tiles = """
+                |tile 123:
+                |##.
+                |...
+                |.#.
+                |
+                |tile 456:
+                |..#
+                |..#
+                |...
+                |
+                |tile 888:
+                |...
+                |..#
+                |#..
+                |
+                |tile 777:
+                |.#.
+                |...
+                |#.#
+                """.trimMargin()
+            val cornerTileArrangement: CornerTileArrangement = findCornerTiles(tiles)
+            assertThat(cornerTileArrangement.top.left.id, equalTo(123))
+            assertThat(cornerTileArrangement.top.right.id, equalTo(456))
+            assertThat(cornerTileArrangement.bottom.left.id, equalTo(777))
+            assertThat(cornerTileArrangement.bottom.right.id, equalTo(888))
+        }
+
+        @Test
+        internal fun `the tiles line up top to bottom as well with first and last tile switched positions`() {
+            val tiles = """
+                |tile 777:
+                |.#.
+                |...
+                |#.#
+                |
+                |tile 456:
+                |..#
+                |..#
+                |...
+                |
+                |tile 888:
+                |...
+                |..#
+                |#..
+                |
+                |tile 123:
+                |##.
+                |...
+                |.#.
+                """.trimMargin()
+            val cornerTileArrangement: CornerTileArrangement = findCornerTiles(tiles)
+            assertThat(cornerTileArrangement.top.left.id, equalTo(123))
+            assertThat(cornerTileArrangement.top.right.id, equalTo(456))
+            assertThat(cornerTileArrangement.bottom.left.id, equalTo(777))
+            assertThat(cornerTileArrangement.bottom.right.id, equalTo(888))
+        }
         // todo: remember they can be turned as well..
     }
 
