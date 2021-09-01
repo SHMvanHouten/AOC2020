@@ -35,6 +35,14 @@ data class Coordinate(val x: Int, val y: Int) {
         return Coordinate(x, y)
     }
 
+    operator fun minus(otherCoordinate: Coordinate): Coordinate {
+        return this.plus(otherCoordinate.negate())
+    }
+
+    private fun negate(): Coordinate {
+        return this.copy(x = -x, y = -y)
+    }
+
     fun move(direction: Direction, distance: Int = 1): Coordinate {
         return when (direction) {
             Direction.NORTH -> this + Coordinate(0, distance.negate())
@@ -126,6 +134,30 @@ data class Coordinate(val x: Int, val y: Int) {
 
 fun Int.negate(): Int {
     return this * -1
+}
+
+/**
+ * returns a set of coordinates for wherever the char is found in the string
+ */
+fun String.toCoordinateMap(targetChar: Char = '#'): Set<Coordinate> {
+    return this.lines().mapIndexed { y, line ->
+        line.mapIndexed { x, c ->
+            if(c == targetChar) {
+                Coordinate(x, y)
+            } else {
+                null
+            }
+        }.filterNotNull()
+    }.flatten().toSet()
+}
+
+fun Set<Coordinate>.orientFromTopLeftMostCoordinate(): Set<Coordinate> {
+    val topLeftMost = this.top().minBy { it.x }!!
+    return this.map { it.minus(topLeftMost) }.toSet()
+}
+
+fun Set<Coordinate>.top(): Set<Coordinate> {
+    return this.filter { it.y == this.map{it.y}.min() }.toSet()
 }
 
 fun <T> Map<Coordinate, T>.top(): Map<Coordinate, T> {

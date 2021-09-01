@@ -4,6 +4,7 @@ import com.github.shmvanhouten.adventofcode2020.coordinate.Coordinate
 import com.github.shmvanhouten.adventofcode2020.coordinate.Direction.*
 import com.github.shmvanhouten.adventofcode2020.coordinate.bottom
 import com.github.shmvanhouten.adventofcode2020.coordinate.top
+import com.github.shmvanhouten.adventofcode2020.util.flipped
 
 private val STARTING_COORDINATE = Coordinate(0, 0)
 
@@ -83,18 +84,6 @@ data class TileArrangement(
 
 data class LocatedTile(val coordinate: Coordinate, val tile: Tile)
 
-class Row<T>(private vararg val elements: T) {
-    val left: T
-        get() {
-            return elements.first()
-        }
-
-    val right: T
-        get() {
-            return elements.last()
-        }
-}
-
 data class Tile(val id: Long, val value: String) {
     private val lines = value.lines()
     val topSide = lines.first()
@@ -104,20 +93,25 @@ data class Tile(val id: Long, val value: String) {
     val flipped: Tile
         get() {
             return this.copy(
-                value = value.lines().map { it.reversed() }.joinToString("\n")
+                value = value.flipped()
             )
         }
     private val rotatedRight: Tile
         get() {
-            val value = (lines.first().lastIndex.downTo(0))
-                .joinToString("\n") { charPosition ->
-                    (0..lines.lastIndex)
-                        .map { lineIndex -> lines[lineIndex] }
-                        .map { line -> line[charPosition] }
-                        .joinToString("")
-                }
+            val value = rotatedRight(value)
             return this.copy(value = value)
         }
+
+    private fun rotatedRight(value: String): String {
+        return (value.lines().first().lastIndex.downTo(0))
+            .joinToString("\n") { charPosition ->
+                (0..value.lines().lastIndex)
+                    .map { lineIndex -> value.lines()[lineIndex] }
+                    .map { line -> line[charPosition] }
+                    .joinToString("")
+            }
+    }
+
     private val rotatedTwice: Tile
         get() {
             return rotatedRight.rotatedRight
