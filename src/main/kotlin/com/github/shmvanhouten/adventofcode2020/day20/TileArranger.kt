@@ -1,6 +1,5 @@
 package com.github.shmvanhouten.adventofcode2020.day20
 
-import com.github.shmvanhouten.adventofcode2020.coordinate.left
 import com.github.shmvanhouten.adventofcode2020.util.blocks
 import java.util.*
 import kotlin.math.sqrt
@@ -37,7 +36,7 @@ fun rearrangeTiles(tiles: List<Tile>): TileArrangement {
 private fun setupAllTilesInAllRotationsAtStartingPosition(tiles: List<Tile>): List<TileArrangement> {
     return tiles
         .flatMap { it.inAllRotations() }
-        .flatMap { listOf(it, it.flip()) }
+        .flatMap { listOf(it, it.flipped) }
         .map { TileArrangement(it, tiles - it) }
 }
 

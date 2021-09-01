@@ -12,6 +12,11 @@ data class TileArrangement(
     val unplacedTiles: Collection<Tile>,
     val lastPlaced: LocatedTile
 ) {
+    fun withBorderlessTiles(): TileArrangement {
+        return this.copy(tiles = tiles.mapValues {
+            it.value.withoutBorders()
+        })
+    }
     override fun toString(): String {
         return (0..tiles.map { it.key.y }.max()!!)
             .map { y ->
@@ -44,7 +49,7 @@ data class TileArrangement(
         val tileAbove = tiles[location.getNeighbour(NORTH)]
         return unplacedTiles
             .flatMap { it.inAllRotations() }
-            .flatMap { listOf(it, it.flip()) }
+            .flatMap { listOf(it, it.flipped) }
             .filter { it.leftSide == lastPlaced.tile.rightSide }
             .filter { tileAbove?.bottomSide?.equals(it.topSide)?:true }
             .map {
@@ -61,7 +66,7 @@ data class TileArrangement(
         val tileToGoBelow = tiles[lastPlaced.coordinate.copy(x = 0)]!!
         return unplacedTiles
             .flatMap { it.inAllRotations() }
-            .flatMap { listOf(it, it.flip()) }
+            .flatMap { listOf(it, it.flipped) }
             .filter { it.topSide == tileToGoBelow.bottomSide }
             .map {
                 copy(
@@ -96,6 +101,12 @@ data class Tile(val id: Long, val value: String) {
     val bottomSide = lines.last()
     val leftSide = lines.map { it.first() }.joinToString("")
     val rightSide = lines.map { it.last() }.joinToString("")
+    val flipped: Tile
+        get() {
+            return this.copy(
+                value = value.lines().map { it.reversed() }.joinToString("\n")
+            )
+        }
     private val rotatedRight: Tile
         get() {
             val value = (lines.first().lastIndex.downTo(0))
@@ -111,6 +122,7 @@ data class Tile(val id: Long, val value: String) {
         get() {
             return rotatedRight.rotatedRight
         }
+
     private val rotatedLeft: Tile
         get() {
             return rotatedTwice.rotatedRight
@@ -129,17 +141,19 @@ data class Tile(val id: Long, val value: String) {
         )
     }
 
+    fun withoutBorders(): Tile {
+        return this.copy(value = value.lines()
+            .subList(1, this.value.lines().size - 1)
+            .map { it.substring(1, it.length - 1) }
+            .joinToString("\n")
+        )
+    }
+
     override fun equals(other: Any?): Boolean {
         return other is Tile && other.id == this.id
     }
 
     override fun hashCode(): Int {
         return id.hashCode()
-    }
-
-    fun flip(): Tile {
-        return this.copy(
-            value = value.lines().map { it.reversed() }.joinToString("\n")
-        )
     }
 }

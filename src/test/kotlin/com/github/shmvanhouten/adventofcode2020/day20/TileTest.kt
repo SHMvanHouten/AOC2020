@@ -1,9 +1,7 @@
 package com.github.shmvanhouten.adventofcode2020.day20
 
 import com.natpryce.hamkrest.assertion.assertThat
-import com.natpryce.hamkrest.contains
 import com.natpryce.hamkrest.equalTo
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 internal class TileTest {
@@ -61,7 +59,7 @@ internal class TileTest {
         """.trimIndent()
         val tile = Tile(-1, tileValue)
         assertThat(
-            tile.flip().value,
+            tile.flipped.value,
             equalTo("""
                 #...##.#..
                 ..#.#..#.#
