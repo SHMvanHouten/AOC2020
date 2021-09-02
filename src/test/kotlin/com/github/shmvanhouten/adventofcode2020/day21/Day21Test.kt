@@ -72,7 +72,34 @@ class Day21Test {
 
         @Test
         internal fun `which means that mxmxvkd contains dairy`() {
+            assertThat(
+                findDangerousIngredients(example1.parse()).first{ it.first == "dairy"},
+                equalTo("dairy" to "mxmxvkd")
+            )
+        }
 
+        @Test
+        internal fun `which means that sqjhc contains fish`() {
+            assertThat(
+                findDangerousIngredients(example1.parse()).first{ it.first == "fish"},
+                equalTo("fish" to "sqjhc")
+            )
+        }
+
+        @Test
+        internal fun `which means that fvjkl contains soy`() {
+            assertThat(
+                findDangerousIngredients(example1.parse()).first{ it.first == "soy"},
+                equalTo("soy" to "fvjkl")
+            )
+        }
+
+        @Test
+        internal fun `part 2`() {
+            assertThat(
+                findDangerousIngredients(readFile("/input-day21.txt").parse()).map { it.second }.joinToString(","),
+                equalTo("dhfng,pgblcd,xhkdc,ghlzj,dstct,nqbnmzx,ntggc,znrzgs")
+            )
         }
     }
 
