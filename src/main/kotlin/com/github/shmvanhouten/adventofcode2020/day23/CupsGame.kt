@@ -1,71 +1,83 @@
 package com.github.shmvanhouten.adventofcode2020.day23
 
-import com.github.shmvanhouten.adventofcode2017.util.splitIntoTwo
-
 fun act(cupsGame: CupsGame, times: Int): CupsGame {
     var i = 0
-    var game = cupsGame
     while (i < times) {
-        game = game.act()
+        cupsGame.act()
         i += 1
     }
-    return game
+    return cupsGame
 }
 
-class CupsGame(private val cups: List<Cup>) {
+class CupsGame(private val cupsOrder: List<Int>) {
+    val cups: Map<Int, LinkedCup> = initiateLinkedCups(cupsOrder).associateBy { it.labelNumber }
+    var currentCup: LinkedCup = cups[cupsOrder.first()]!!
 
-    constructor(cupsLabeling: String) : this(cupsLabeling.map { it.toString().toInt() })
+    fun act() {
+        val pickedUpCups = pickUp3CupsNextToCurrent()
+        insertPickedUpCupsAtIndex(findTargetCup(pickedUpCups), pickedUpCups)
 
-    fun act(): CupsGame {
-        val (pickedUpCups, remainingCups) = pickUp3CupsNextToCurrent()
-        val updatedCups = insertPickedUpCupsAtIndex(remainingCups, pickedUpCups, findIndexOfTargetCup(remainingCups))
-        return CupsGame(updatedCups.moveCupsSoNewTargetCupIsAtStart())
+        currentCup = currentCup.nextCup
     }
 
-    private fun insertPickedUpCupsAtIndex(
-        cups: List<Cup>,
-        pickedUpCups: List<Cup>,
-        targetCupIndex: Int
-    ): List<Cup> {
-        val (cupsBefore, cupsAfter) = cups.splitIntoTwo(targetCupIndex + 1)
-        return cupsBefore + pickedUpCups + cupsAfter
+    private fun insertPickedUpCupsAtIndex(targetCup: LinkedCup, pickedUpCups: List<LinkedCup>) {
+        val rightCup = targetCup.nextCup
+        targetCup.nextCup = pickedUpCups.first()
+        pickedUpCups.last().nextCup = rightCup
     }
 
-    private fun findIndexOfTargetCup(remainingCups: List<Cup>): Int {
-        var targetCupValue = remainingCups.first() - 1
+    private fun pickUp3CupsNextToCurrent(): List<LinkedCup> {
+        val the3Cups = mutableListOf(currentCup.nextCup)
+        for (i in 0.until(2)) {
+            the3Cups.add(the3Cups.last().nextCup)
+        }
+        currentCup.nextCup = the3Cups.last().nextCup
+        return the3Cups.toList()
+    }
 
-        while (remainingCups.indexOf(targetCupValue) == -1) {
-            if(targetCupValue == 0) {
-                targetCupValue = 9
-            } else {
-                targetCupValue -= 1
-            }
+    private fun findTargetCup(pickedUpCups: List<LinkedCup>): LinkedCup {
+        var targetCupValue = oneBelow(currentCup.labelNumber)
+
+        while (pickedUpCups.any { it.labelNumber == targetCupValue }) {
+            targetCupValue = oneBelow(targetCupValue)
         }
 
-        return remainingCups.indexOf(targetCupValue)
+        return cups[targetCupValue]!!
     }
 
-    private fun pickUp3CupsNextToCurrent(): Pair<List<Cup>, List<Cup>> {
-        return cups.subList(1,4) to cups.first() + cups.subList(4, cups.size)
+    private fun oneBelow(labelNumber: Int): Int {
+        val number = labelNumber - 1
+        return if (number == 0) {
+            cupsOrder.size
+        } else {
+            number
+        }
     }
 
     fun printCups(): String {
-        return cups.joinToString("")
+        val stringBuilder = StringBuilder(currentCup.labelNumber.toString())
+        var cup = currentCup.nextCup
+        while (cup != currentCup) {
+            stringBuilder.append(cup.labelNumber)
+            cup = cup.nextCup
+        }
+        return stringBuilder.toString()
     }
 
     fun printCupsAfter1(): String {
-        return (cups.subList(cups.indexOf(1) + 1, cups.size) + cups.subList(0, cups.indexOf(1)))
-            .joinToString("")
+        val stringBuilder = StringBuilder()
+        val cup1 = cups[1]!!
+        var cup = cup1.nextCup
+        while (cup != cup1) {
+            stringBuilder.append(cup.labelNumber)
+            cup = cup.nextCup
+        }
+        return stringBuilder.toString()
     }
 
+    fun get2CupsAfter1(): Pair<Int, Int> {
+        val cup1 = cups[1]!!
+        val nextCup = cup1.nextCup
+        return nextCup.labelNumber to nextCup.nextCup.labelNumber
+    }
 }
-
-private fun List<Cup>.moveCupsSoNewTargetCupIsAtStart(): List<Cup> {
-    return this.subList(1, this.size) + this.first()
-}
-
-private operator fun Int.plus(list: List<Cup>): List<Cup> {
-    return listOf(this) + list
-}
-
-typealias Cup = Int
