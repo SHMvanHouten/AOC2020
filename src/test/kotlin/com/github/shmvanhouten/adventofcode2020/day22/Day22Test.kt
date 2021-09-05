@@ -1,6 +1,5 @@
 package com.github.shmvanhouten.adventofcode2020.day22
 
-import com.github.shmvanhouten.adventofcode2017.util.splitIntoTwo
 import com.github.shmvanhouten.adventofcode2020.util.FileReader.readFile
 import com.github.shmvanhouten.adventofcode2020.util.blocks
 import com.natpryce.hamkrest.assertion.assertThat
@@ -57,6 +56,48 @@ class Day22Test {
         }
     }
 
+    @Nested
+    inner class Part_2_recursive_combat {
+
+        @Test
+        internal fun example1() {
+            val combat = example1.toRecursiveCombatGame()
+
+            val (winner, score) = play(combat)
+
+            assertThat(winner, equalTo("Player 2"))
+            assertThat(score, equalTo(291))
+        }
+
+        @Test
+        internal fun `infinite recursive example`() {
+            val combat = infiniteRecursiveExample.toRecursiveCombatGame()
+
+            val (winner, score) = play(combat)
+
+            assertThat(winner, equalTo("Player 1"))
+        }
+
+        @Test
+        internal fun `part 2`() {
+            val combat = readFile("/input-day22.txt").toRecursiveCombatGame()
+            val (winner, score) = play(combat)
+
+            assertThat(winner, equalTo("Player 1"))
+            assertThat(score, equalTo(33304))
+        }
+    }
+
+}
+
+private fun String.toRecursiveCombatGame(): RecursiveCombatGame {
+    val players = this.blocks()
+    val player1 = players[0].lines()
+    val player2 = players[1].lines()
+    return RecursiveCombatGame(
+        player1.toRecursivePlayer(),
+        player2.toRecursivePlayer()
+    )
 }
 
 private fun String.toCombatGame(): CombatGame {
@@ -76,6 +117,13 @@ private fun List<String>.toPlayer(): Player {
     )
 }
 
+private fun List<String>.toRecursivePlayer(): RecursivePlayer {
+    return RecursivePlayer(
+        this.subList(1, this.size).map { it.toInt() },
+        this.first().substring(0, this.first().length - 1)
+    )
+}
+
 val example1 = """
     Player 1:
     9
@@ -90,4 +138,15 @@ val example1 = """
     4
     7
     10
+""".trimIndent()
+
+val infiniteRecursiveExample = """
+    Player 1:
+    43
+    19
+
+    Player 2:
+    2
+    29
+    14
 """.trimIndent()

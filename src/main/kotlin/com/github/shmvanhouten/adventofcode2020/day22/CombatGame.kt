@@ -23,20 +23,20 @@ class CombatGame(val player1: Player, val player2: Player) {
     }
 
     fun hasNoWinner(): Boolean {
-        return player1.cards.isNotEmpty() && player2.cards.isNotEmpty()
+        return !player1.hasWon() && !player2.hasWon()
     }
 
     private fun player1WinsRound(): CombatGame {
         return CombatGame(
-            player1.wins(player2.nextCard()),
-            player2.loses()
+            player1.winsRound(player2.nextCard()),
+            player2.losesRound()
         )
     }
 
     private fun player2WinsRound(): CombatGame {
         return CombatGame(
-            player2.wins(player1.nextCard()),
-            player1.loses()
+            player2.winsRound(player1.nextCard()),
+            player1.losesRound()
         )
     }
 
@@ -61,13 +61,13 @@ data class Player(val cards: List<Int>, val name: String) {
         return cards.first()
     }
 
-    fun wins(losingCard: Int): Player {
+    fun winsRound(losingCard: Int): Player {
         return this.copy(
             cards = cards.subList(1, cards.size) + cards.first() + losingCard
         )
     }
 
-    fun loses(): Player {
+    fun losesRound(): Player {
         return this.copy(cards = cards.subList(1, cards.size))
     }
 
@@ -78,6 +78,10 @@ data class Player(val cards: List<Int>, val name: String) {
                 (i + 1L) * card
             }.sum()
         )
+    }
+
+    fun hasWon(): Boolean {
+        return cards.isEmpty()
     }
 
 }
