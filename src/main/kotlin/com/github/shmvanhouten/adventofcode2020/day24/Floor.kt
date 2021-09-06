@@ -1,22 +1,24 @@
 package com.github.shmvanhouten.adventofcode2020.day24
 
-class Floor {
-    var tiles = mutableMapOf<HexCoordinate, Boolean>()
+class Floor(flipInstructions: String) {
+    val tiles = initiate(flipInstructions)
 
-    fun initiate(flipInstructions: String) {
-        initiate(flipInstructions.parse())
+    private fun initiate(flipInstructions: String): Map<HexCoordinate, Boolean> {
+        return initiate(flipInstructions.parse())
     }
 
-    private fun initiate(flipInstructions: List<PathInstruction>) {
-        flipInstructions.forEach { flip(it) }
+    private fun initiate(flipInstructions: List<PathInstruction>): Map<HexCoordinate, Boolean> {
+        val tiles = mutableMapOf<HexCoordinate, Boolean>()
+        flipInstructions.forEach { flip(tiles, it) }
+        return tiles.toMap()
     }
 
-    private fun flip(instruction: PathInstruction) {
+    private fun flip(initiateTiles: MutableMap<HexCoordinate, Boolean>, instruction: PathInstruction) {
         var currentCoordinate = HexCoordinate(0,0)
         instruction.forEach { stepInDirection ->
             currentCoordinate = currentCoordinate.getNeighbouringHexTo(stepInDirection)
         }
-        tiles.merge(currentCoordinate, true) { v, _ -> !v}
+        initiateTiles.merge(currentCoordinate, true) { v, _ -> !v}
     }
 }
 

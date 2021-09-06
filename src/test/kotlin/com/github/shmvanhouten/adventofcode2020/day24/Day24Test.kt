@@ -27,32 +27,28 @@ class Day24Test {
             x: Int,
             y: Int
         ) {
-            val floor = Floor()
-            floor.initiate(input)
+            val floor = Floor(input)
             assertThat(floor.tiles.size, equalTo(1))
             assertThat(floor.tiles.keys.first(), equalTo(HexCoordinate(x,y)))
         }
 
         @Test
         internal fun `moving east twice flips the tile at 2,0`() {
-            val floor = Floor()
-            floor.initiate("ee")
+            val floor = Floor("ee")
             assertThat(floor.tiles.size, equalTo(1))
             assertThat(floor.tiles.keys.first(), equalTo(HexCoordinate(2,0)))
         }
 
         @Test
         internal fun `two instructions, 1 moving east flips (1,0), 1 moving west flips (-1,0)`() {
-            val floor = Floor()
-            floor.initiate("e\nw")
+            val floor = Floor("e\nw")
             assertThat(floor.tiles.size, equalTo(2))
             assertThat(floor.tiles.keys.toSet(), equalTo(setOf(HexCoordinate(1, 0), HexCoordinate(-1, 0))))
         }
 
         @Test
         internal fun `two instructions, both moving east 1 step, flips the tile on and off again`() {
-            val floor = Floor()
-            floor.initiate("e\ne")
+            val floor = Floor("e\ne")
             assertThat(floor.tiles.size, equalTo(1))
             assertThat(floor.tiles.keys.toSet(), equalTo(setOf(HexCoordinate(1, 0))))
             assertThat(floor.tiles[HexCoordinate(1,0)], equalTo(false))
@@ -82,8 +78,7 @@ class Day24Test {
                 neswnwewnwnwseenwseesewsenwsweewe
                 wseweeenwnesenwwwswnew
             """.trimIndent()
-            val floor = Floor()
-            floor.initiate(example)
+            val floor = Floor(example)
             assertThat(floor.tiles.size, equalTo(15))
             assertThat(floor.tiles.filter { it.value }.size, equalTo(10))
         }
@@ -91,8 +86,7 @@ class Day24Test {
         @Test
         internal fun `part 1`() {
             val input = readFile("/input-day24.txt")
-            val floor = Floor()
-            floor.initiate(input)
+            val floor = Floor(input)
             assertThat(floor.tiles.filter { it.value }.size, equalTo(382))
         }
     }
