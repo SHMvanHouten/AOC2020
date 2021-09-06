@@ -25,6 +25,11 @@ data class HexCoordinate(val x: Int, val y: Int) {
             }
         }
     }
+
+    fun listSurrounding(): List<HexCoordinate> {
+        return Direction.values()
+            .map { this.getNeighbouringHexTo(it) }
+    }
 }
 
 private fun Int.isEven(): Boolean {

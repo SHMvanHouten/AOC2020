@@ -9,10 +9,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 class Day24Test {
-
     @Nested
     inner class Part1 {
-
         @ParameterizedTest(name = "{0} flips [{1},{2}]")
         @CsvSource(
             value = [
@@ -28,35 +26,96 @@ class Day24Test {
             y: Int
         ) {
             val floor = Floor(input)
-            assertThat(floor.tiles.size, equalTo(1))
-            assertThat(floor.tiles.keys.first(), equalTo(HexCoordinate(x,y)))
+            assertThat(floor.blackTiles.size, equalTo(1))
+            assertThat(floor.blackTiles.first(), equalTo(HexCoordinate(x, y)))
         }
 
         @Test
         internal fun `moving east twice flips the tile at 2,0`() {
             val floor = Floor("ee")
-            assertThat(floor.tiles.size, equalTo(1))
-            assertThat(floor.tiles.keys.first(), equalTo(HexCoordinate(2,0)))
+            assertThat(floor.blackTiles.size, equalTo(1))
+            assertThat(floor.blackTiles.first(), equalTo(HexCoordinate(2, 0)))
         }
 
         @Test
         internal fun `two instructions, 1 moving east flips (1,0), 1 moving west flips (-1,0)`() {
             val floor = Floor("e\nw")
-            assertThat(floor.tiles.size, equalTo(2))
-            assertThat(floor.tiles.keys.toSet(), equalTo(setOf(HexCoordinate(1, 0), HexCoordinate(-1, 0))))
+            assertThat(floor.blackTiles.size, equalTo(2))
+            assertThat(floor.blackTiles.toSet(), equalTo(setOf(HexCoordinate(1, 0), HexCoordinate(-1, 0))))
         }
 
         @Test
         internal fun `two instructions, both moving east 1 step, flips the tile on and off again`() {
             val floor = Floor("e\ne")
-            assertThat(floor.tiles.size, equalTo(1))
-            assertThat(floor.tiles.keys.toSet(), equalTo(setOf(HexCoordinate(1, 0))))
-            assertThat(floor.tiles[HexCoordinate(1,0)], equalTo(false))
+            assertThat(floor.blackTiles.size, equalTo(0))
         }
 
         @Test
         internal fun `example 1`() {
-            val example = """
+            val floor = Floor(example)
+            assertThat(floor.countBlackTiles(), equalTo(10))
+        }
+
+        @Test
+        internal fun `part 1`() {
+            val input = readFile("/input-day24.txt")
+            val floor = Floor(input)
+            assertThat(floor.blackTiles.size, equalTo(382))
+        }
+
+    }
+
+    @Nested
+    inner class Part_2_game_of_life_hex_style {
+
+        @ParameterizedTest(name = "Day {0}: {1}")
+        @CsvSource(
+            value = [
+                "1, 15",
+                "2, 12",
+                "3, 25",
+                "4, 14",
+                "5, 23",
+                "6, 28",
+                "7, 41",
+                "8, 37",
+                "9, 49",
+                "10, 37",
+                "20, 132",
+                "30, 259",
+                "40, 406",
+                "50, 566",
+                "60, 788",
+                "70, 1106",
+                "80, 1373",
+                "90, 1844",
+                "100, 2208"
+            ]
+        )
+        internal fun `after x days y tiles are black`(
+            days: Int,
+            expectedBlackTiles: Int
+        ) {
+            val floor = Floor(example)
+            assertThat(floor.countBlackTiles(), equalTo(10))
+
+            val flippedFloor = tick(floor, days)
+            assertThat(flippedFloor.countBlackTiles(), equalTo(expectedBlackTiles))
+        }
+
+        @Test
+        internal fun `part 2`() {
+            val input = readFile("/input-day24.txt")
+            val floor = Floor(input)
+            val flippedFloor = tick(floor, 100)
+
+            assertThat(flippedFloor.countBlackTiles(), equalTo(3964))
+        }
+    }
+
+}
+
+private val example = """
                 sesenwnenenewseeswwswswwnenewsewsw
                 neeenesenwnwwswnenewnwwsewnenwseswesw
                 seswneswswsenwwnwse
@@ -78,17 +137,3 @@ class Day24Test {
                 neswnwewnwnwseenwseesewsenwsweewe
                 wseweeenwnesenwwwswnew
             """.trimIndent()
-            val floor = Floor(example)
-            assertThat(floor.tiles.size, equalTo(15))
-            assertThat(floor.tiles.filter { it.value }.size, equalTo(10))
-        }
-
-        @Test
-        internal fun `part 1`() {
-            val input = readFile("/input-day24.txt")
-            val floor = Floor(input)
-            assertThat(floor.tiles.filter { it.value }.size, equalTo(382))
-        }
-    }
-
-}
