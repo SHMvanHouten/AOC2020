@@ -1,6 +1,6 @@
 package com.github.shmvanhouten.adventofcode2020.day23
 
-data class LinkedCup(val labelNumber: Int) {
+data class LinkedCup(val labelNumber: Int): Iterable<LinkedCup> {
     lateinit var nextCup: LinkedCup
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -15,6 +15,21 @@ data class LinkedCup(val labelNumber: Int) {
 
     override fun hashCode(): Int {
         return labelNumber
+    }
+
+    override fun iterator(): Iterator<LinkedCup> {
+        return LinkedCupIterator(this)
+    }
+
+}
+
+class LinkedCupIterator(private val linkedCup: LinkedCup) : Iterator<LinkedCup> {
+    override fun hasNext(): Boolean {
+        return true
+    }
+
+    override fun next(): LinkedCup {
+        return linkedCup.nextCup
     }
 
 }
