@@ -1,11 +1,7 @@
 package com.github.shmvanhouten.adventofcode2020.day23
 
 fun act(cupsGame: CupsGame, times: Int): CupsGame {
-    var i = 0
-    while (i < times) {
-        cupsGame.act()
-        i += 1
-    }
+    repeat(times) {cupsGame.act()}
     return cupsGame
 }
 
@@ -36,22 +32,12 @@ class CupsGame(private val cupsOrder: List<Int>) {
     }
 
     private fun findTargetCup(pickedUpCups: List<LinkedCup>): LinkedCup {
-        var targetCupValue = oneBelow(currentCup.labelNumber)
+        val targetCupNumber = (currentCup.labelNumber - 1)
+            .downTo(1)
+            .repeat()
+            .first { nr -> pickedUpCups.none { it.labelNumber == nr } }
 
-        while (pickedUpCups.any { it.labelNumber == targetCupValue }) {
-            targetCupValue = oneBelow(targetCupValue)
-        }
-
-        return cups[targetCupValue]!!
-    }
-
-    private fun oneBelow(labelNumber: Int): Int {
-        val number = labelNumber - 1
-        return if (number == 0) {
-            cupsOrder.size
-        } else {
-            number
-        }
+        return cups[targetCupNumber]!!
     }
 
     fun printCups(): String {
@@ -81,3 +67,9 @@ class CupsGame(private val cupsOrder: List<Int>) {
         return nextCup.labelNumber to nextCup.nextCup.labelNumber
     }
 }
+
+fun <T> Sequence<T>.repeat(): Sequence<T> =
+    generateSequence(this) { this }.flatten()
+
+fun IntProgression.repeat(): Sequence<Int> =
+    this.asSequence().repeat()
