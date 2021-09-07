@@ -5,18 +5,14 @@ import com.github.shmvanhouten.adventofcode2017.util.splitIntoTwo
 fun findDangerousIngredients(
     ingredientList: List<Pair<Set<Ingredient>, Set<Allergen>>>
 ): List<Pair<Ingredient, Allergen>> {
-    val ingredientsByAllergens = matchIngredientsToAllergens(ingredientList).toMutableMap()
+    val ingredientsByAllergens: MutableMap<Allergen, Set<Ingredient>> = matchIngredientsToAllergens(ingredientList).toMutableMap()
     val allergenicIngredients = mutableListOf<Pair<Ingredient, Allergen>>()
+
     while (ingredientsByAllergens.isNotEmpty()) {
-        val (allergen, ingredientSet) = ingredientsByAllergens.entries.first { it.value.size == 1 }
+        val (allergen, ingredientSet) = ingredientsByAllergens.poll()
         val ingredient = ingredientSet.first()
         allergenicIngredients.add(allergen to ingredient)
-        ingredientsByAllergens.remove(allergen)
-        ingredientsByAllergens
-            .filter { it.value.contains(ingredient) }
-            .forEach { (allergen, ingredients) ->
-                ingredientsByAllergens.put(allergen, ingredients - ingredient)
-            }
+        ingredientsByAllergens.removeFromIngredients(ingredient)
     }
 
     return allergenicIngredients
@@ -62,6 +58,19 @@ fun String.parse(): List<Pair<Set<Ingredient>, Set<Allergen>>> {
 fun splitIngredientsAndAllergens(rawLine: String): Pair<Set<Ingredient>, Set<Allergen>> {
     val (ingredients, allergens) = rawLine.splitIntoTwo(" (contains ")
     return ingredients.split(" ").toSet() to allergens.substring(0, allergens.length - 1).split(", ").toSet()
+}
+
+private fun MutableMap<Allergen, Set<Ingredient>>.poll(): Pair<Allergen, Set<Ingredient>> {
+    val (allergen, ingredients) = this.entries.first { it.value.size == 1 }
+    this.remove(allergen)
+    return allergen to ingredients
+}
+
+private fun  MutableMap<Allergen, Set<Ingredient>>.removeFromIngredients(ingredient: Ingredient) {
+    this.filter { it.value.contains(ingredient) }
+        .forEach { (allergen, ingredients) ->
+            this[allergen] = ingredients - ingredient
+        }
 }
 
 typealias Ingredient = String
