@@ -1,11 +1,9 @@
 package com.github.shmvanhouten.adventofcode2020.day22
 
 fun play(game: CombatGame): CombatResult {
-    var combatGame = game
-    while (combatGame.hasNoWinner()) {
-        combatGame = combatGame.playRound()
-    }
-    return calculateResult(combatGame)
+    return generateSequence(game) { it.playRound() }
+        .first { it.hasAWinner() }
+        .let { calculateResult(it) }
 }
 
 fun calculateResult(combatGame: CombatGame): CombatResult {
@@ -22,8 +20,12 @@ class CombatGame(val player1: Player, val player2: Player) {
         }
     }
 
-    fun hasNoWinner(): Boolean {
-        return !player1.hasWon() && !player2.hasWon()
+    fun hasAWinner(): Boolean {
+        return player1.hasWon() || player2.hasWon()
+    }
+
+    private fun hasNoWinner(): Boolean {
+        return !hasAWinner()
     }
 
     private fun player1WinsRound(): CombatGame {
@@ -54,7 +56,14 @@ class CombatGame(val player1: Player, val player2: Player) {
 
 }
 
-data class CombatResult(val winner: String, val score: Long)
+data class CombatResult(val winner: String, val cards: List<Int>) {
+    val score: Long
+        get() {
+            return this.cards.reversed().mapIndexed { i, card ->
+                (i + 1L) * card
+            }.sum()
+        }
+}
 
 data class Player(val cards: List<Int>, val name: String) {
     fun nextCard(): Int {
@@ -74,9 +83,7 @@ data class Player(val cards: List<Int>, val name: String) {
     fun result(): CombatResult {
         return CombatResult(
             this.name,
-            this.cards.reversed().mapIndexed { i, card ->
-                (i + 1L) * card
-            }.sum()
+            this.cards
         )
     }
 

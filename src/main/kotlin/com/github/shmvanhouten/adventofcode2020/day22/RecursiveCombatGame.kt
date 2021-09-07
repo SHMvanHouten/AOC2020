@@ -2,12 +2,9 @@ package com.github.shmvanhouten.adventofcode2020.day22
 
 fun play(game: RecursiveCombatGame): CombatResult {
 //    println("=== Game ${game.gameDepth} ===")
-    var combatGame = game
-    while (combatGame.hasNoWinner()) {
-        combatGame = combatGame.playRound()
-    }
-//    println()
-    return calculateResult(combatGame)
+    return generateSequence(game) { it.playRound() }
+        .first { it.hasAWinner() }
+        .let { calculateResult(it) }
 }
 
 fun calculateResult(combatGame: RecursiveCombatGame): CombatResult {
@@ -31,8 +28,8 @@ class RecursiveCombatGame (
         } else null
     }
 
-    fun hasNoWinner(): Boolean {
-        return winner == null
+    fun hasAWinner(): Boolean {
+        return winner != null
     }
 
     fun playRound(): RecursiveCombatGame {
@@ -44,21 +41,24 @@ class RecursiveCombatGame (
 //        println("Player 2 plays: ${player2.nextCard()}")
         if(player1.wantsToRecurse() && player2.wantsToRecurse()) {
 //            println("Playing a sub-game to determine the winner...")
-            val recursiveGame = RecursiveCombatGame(
-                player1.recursiveHand(),
-                player2.recursiveHand(),
-                gameDepth = gameDepth + 1
-            )
-            val (recursiveGameWinner, _) = play(recursiveGame)
-            return if(recursiveGameWinner == player1.name) {
-                player1WinsRound()
-            } else {
-                player2WinsRound()
-            }
+            return playRecursiveGame()
         } else if(player1.nextCard() > player2.nextCard()) {
             return player1WinsRound()
         } else {
             return player2WinsRound()
+        }
+    }
+
+    private fun playRecursiveGame(): RecursiveCombatGame {
+        val recursiveGame = RecursiveCombatGame(
+            player1.recursiveHand(),
+            player2.recursiveHand(),
+            gameDepth = gameDepth + 1
+        )
+        return if (play(recursiveGame).winner == player1.name) {
+            player1WinsRound()
+        } else {
+            player2WinsRound()
         }
     }
 
@@ -109,9 +109,7 @@ data class RecursivePlayer(val cards: List<Int>, val name: String) {
     fun result(): CombatResult {
         return CombatResult(
             this.name,
-            this.cards.reversed().mapIndexed { i, card ->
-                (i + 1L) * card
-            }.sum()
+            this.cards
         )
     }
 

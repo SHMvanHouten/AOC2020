@@ -30,29 +30,29 @@ class Day22Test {
                 Player(listOf(9), "player1"),
                 Player(listOf(8), "player1")
             )
-            val (winner, score) = play(combat)
+            val result = play(combat)
 
-            assertThat(winner, equalTo("player1"))
-            assertThat(score, equalTo(8 + (9 * 2)))
+            assertThat(result.winner, equalTo("player1"))
+            assertThat(result.score, equalTo(8 + (9 * 2)))
         }
 
         @Test
         internal fun example1() {
             val combat = example1.toCombatGame()
 
-            val (winner, score) = play(combat)
+            val result = play(combat)
 
-            assertThat(winner, equalTo("Player 2"))
-            assertThat(score, equalTo(306))
+            assertThat(result.winner, equalTo("Player 2"))
+            assertThat(result.score, equalTo(306))
         }
 
         @Test
         internal fun `part 1`() {
             val combat = readFile("/input-day22.txt").toCombatGame()
-            val (winner, score) = play(combat)
+            val result = play(combat)
 
-            assertThat(winner, equalTo("Player 1"))
-            assertThat(score, equalTo(36257))
+            assertThat(result.winner, equalTo("Player 1"))
+            assertThat(result.score, equalTo(36257))
         }
     }
 
@@ -63,28 +63,28 @@ class Day22Test {
         internal fun example1() {
             val combat = example1.toRecursiveCombatGame()
 
-            val (winner, score) = play(combat)
+            val result = play(combat)
 
-            assertThat(winner, equalTo("Player 2"))
-            assertThat(score, equalTo(291))
+            assertThat(result.winner, equalTo("Player 2"))
+            assertThat(result.score, equalTo(291))
         }
 
         @Test
         internal fun `infinite recursive example`() {
             val combat = infiniteRecursiveExample.toRecursiveCombatGame()
 
-            val (winner, score) = play(combat)
+            val result = play(combat)
 
-            assertThat(winner, equalTo("Player 1"))
+            assertThat(result.winner, equalTo("Player 1"))
         }
 
         @Test
         internal fun `part 2`() {
             val combat = readFile("/input-day22.txt").toRecursiveCombatGame()
-            val (winner, score) = play(combat)
+            val result = play(combat)
 
-            assertThat(winner, equalTo("Player 1"))
-            assertThat(score, equalTo(33304))
+            assertThat(result.winner, equalTo("Player 1"))
+            assertThat(result.score, equalTo(33304))
         }
     }
 
