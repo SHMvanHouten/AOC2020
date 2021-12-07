@@ -82,12 +82,9 @@ class Day23Test {
             val cupsLabeling = listOf(9,6,2,7,1,3,8,5,4) + (10..1_000_000)
             val cupsGame = CupsGame(cupsLabeling)
             val gameAfterMove = act(cupsGame, 10_000_000)
-            assertThat(
-                gameAfterMove.get2CupsAfter1()
-                    .map { it.labelNumber.toLong() }
-                    .reduce(Long::times),
-                equalTo(287230227046)
-            )
+            val (cup1, cup2) = gameAfterMove.get2CupsAfter1()
+
+            assertThat(cup1.toLong() * cup2, equalTo(287230227046))
         }
     }
 

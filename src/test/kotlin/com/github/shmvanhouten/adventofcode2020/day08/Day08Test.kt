@@ -3,6 +3,7 @@ package com.github.shmvanhouten.adventofcode2020.day08
 import com.github.shmvanhouten.adventofcode2020.util.FileReader.readFile
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
@@ -99,6 +100,7 @@ class Day08Test {
     inner class Part2 {
 
         @Test
+        @Disabled("is meant to fail, the failing accumulator is the answer")
         internal fun `part 2`() {
             val instructions = parseInstructions(readFile("/input-day08.txt"))
             val positionsOfNopsAndJmps = instructions

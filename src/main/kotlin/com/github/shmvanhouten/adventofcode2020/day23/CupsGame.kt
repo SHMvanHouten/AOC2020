@@ -1,13 +1,11 @@
 package com.github.shmvanhouten.adventofcode2020.day23
 
-import com.github.shmvanhouten.adventofcode2020.util.repeat
-
 fun act(cupsGame: CupsGame, times: Int): CupsGame {
     repeat(times) {cupsGame.act()}
     return cupsGame
 }
 
-class CupsGame(cupsOrder: List<Int>) {
+class CupsGame(private val cupsOrder: List<Int>) {
     private val cups: Map<Int, LinkedCup> = initiateLinkedCups(cupsOrder).associateBy { it.labelNumber }
     var currentCup: LinkedCup = cups[cupsOrder.first()]!!
 
@@ -25,33 +23,57 @@ class CupsGame(cupsOrder: List<Int>) {
     }
 
     private fun pickUp3CupsNextToCurrent(): List<LinkedCup> {
-        val pickedUpCups = currentCup.nextCup.take(3)
-        currentCup.nextCup = pickedUpCups.last().nextCup
-        return pickedUpCups
+        val the3Cups = mutableListOf(currentCup.nextCup)
+        for (i in 0.until(2)) {
+            the3Cups.add(the3Cups.last().nextCup)
+        }
+        currentCup.nextCup = the3Cups.last().nextCup
+        return the3Cups.toList()
     }
 
     private fun findTargetCup(pickedUpCups: List<LinkedCup>): LinkedCup {
-        val targetCupNumber = (currentCup.labelNumber - 1)
-            .downTo(1)
-            .repeat()
-            .first { nr -> pickedUpCups.none { it.labelNumber == nr } }
+        var targetCupValue = oneBelow(currentCup.labelNumber)
 
-        return cups[targetCupNumber]!!
+        while (pickedUpCups.any { it.labelNumber == targetCupValue }) {
+            targetCupValue = oneBelow(targetCupValue)
+        }
+
+        return cups[targetCupValue]!!
+    }
+
+    private fun oneBelow(labelNumber: Int): Int {
+        val number = labelNumber - 1
+        return if (number == 0) {
+            cupsOrder.size
+        } else {
+            number
+        }
     }
 
     fun printCups(): String {
-        return currentCup.takeWhile { it != currentCup }
-            .map { it.labelNumber }
-            .joinToString("")
+        val stringBuilder = StringBuilder(currentCup.labelNumber.toString())
+        var cup = currentCup.nextCup
+        while (cup != currentCup) {
+            stringBuilder.append(cup.labelNumber)
+            cup = cup.nextCup
+        }
+        return stringBuilder.toString()
     }
 
     fun printCupsAfter1(): String {
+        val stringBuilder = StringBuilder()
         val cup1 = cups[1]!!
-        return cup1.takeWhile { it != cup1 }
-            .joinToString("")
+        var cup = cup1.nextCup
+        while (cup != cup1) {
+            stringBuilder.append(cup.labelNumber)
+            cup = cup.nextCup
+        }
+        return stringBuilder.toString()
     }
 
-    fun get2CupsAfter1(): List<LinkedCup> {
-        return cups[1]!!.nextCup.take(2)
+    fun get2CupsAfter1(): Pair<Int, Int> {
+        val cup1 = cups[1]!!
+        val nextCup = cup1.nextCup
+        return nextCup.labelNumber to nextCup.nextCup.labelNumber
     }
 }
